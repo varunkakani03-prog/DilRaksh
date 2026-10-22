@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dilraksh — Full Presentation Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dark:#111827;--stone:#F1F3F6;--card:#fff;--dcard:#1A202C;--code:#0c111b;
+  --orange:#FF5E1E;--green:#10B981;--red:#EF4444;--amber:#F59E0B;
+  --muted:#6B7280;--muted-d:#9CA3AF;--sec:#4B5563;--border:rgba(0,0,0,.07);
+  --border-d:rgba(255,255,255,.09);--charcoal:#111827;
+  --sans:'Plus Jakarta Sans',sans-serif;--serif:'Playfair Display',Georgia,serif;--mono:'JetBrains Mono',Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none}
+body{background:#060a12;font-family:var(--sans);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;width:100vw;height:100vh;overflow:hidden}
+
+/* ── Deck shell ── */
+.deck{position:relative;
+  width:min(96vw,calc(96vh*(16/9)));
+  height:min(calc(96vw*(9/16)),96vh);
+  max-width:1440px;max-height:810px;
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 28px 70px -18px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.07)}
+
+/* ── Slide base ── */
+.slide{position:absolute;inset:0;padding:50px 58px 54px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transform:scale(.984);
+  transition:opacity .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1),visibility .35s;z-index:1}
+.slide.active{opacity:1;visibility:visible;transform:scale(1);z-index:2}
+.dark{background:var(--dark)}.stone{background:var(--stone)}
+
+/* ── Left orange bar (title/closing) ── */
+.lbar{position:absolute;left:0;top:0;width:5px;height:100%;background:var(--orange)}
+
+/* ── Typography ── */
+.kicker{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange);display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.kicker::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.stitle{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:4px}
+.dark .stitle{color:#fff}.stone .stitle{color:var(--charcoal)}
+.divider{width:100%;height:2px;background:var(--orange);margin-bottom:20px;border-radius:2px}
+
+/* ── Grid ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1}
+.g4h{display:grid;grid-template-columns:repeat(4,1fr);gap:0;flex:1;align-items:stretch}
+.g4h-arr{display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:16px;font-weight:800;padding:0 2px}
+.gstack{display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center}
+
+/* ── Cards ── */
+.card{background:var(--card);border-radius:12px;padding:18px 20px;border:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.dcard{background:var(--dcard);border-radius:12px;padding:18px 20px;border:1px solid var(--border-d);display:flex;flex-direction:column;gap:6px}
+.ccard{background:var(--code);border-radius:12px;padding:18px 20px;border:1px solid var(--border-d);display:flex;flex-direction:column;gap:5px}
+.card-hl-o{border-color:rgba(255,94,30,.5);box-shadow:0 6px 18px -6px rgba(255,94,30,.15)}
+.card-hl-r{border-color:rgba(239,68,68,.5)}
+.card-hl-g{border-color:rgba(16,185,129,.4)}
+.card-border-t-r{border-top:3px solid var(--red)}
+.card-border-t-g{border-top:3px solid var(--green)}
+.card-border-l-r{border-left:4px solid var(--red)}
+.card-border-l-o{border-left:4px solid var(--orange)}
+
+.ck{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.ct{font-family:var(--serif);font-size:17px;font-weight:700;line-height:1.2}
+.cb{font-size:12.5px;line-height:1.6;color:var(--muted);flex:1}
+.dcard .cb,.ccard .cb{color:var(--muted-d)}
+
+/* ── Bullet lists ── */
+ul.bl{list-style:none;display:flex;flex-direction:column;gap:7px}
+ul.bl li{position:relative;padding-left:16px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+ul.bl li::before{content:'•';position:absolute;left:2px;color:var(--orange);font-weight:bold;font-size:14px}
+.dark ul.bl li,.dcard ul.bl li,.ccard ul.bl li{color:var(--muted-d)}
+
+/* ── Formula rows ── */
+.frow{background:var(--card);border-radius:10px;padding:12px 18px;border:1px solid var(--border)}
+.frow .fl{font-size:12px;font-weight:700;color:var(--charcoal);margin-bottom:3px}
+.frow .feq{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--orange);margin-bottom:2px}
+.frow .fn{font-size:11px;color:var(--muted)}
+
+/* ── Code block ── */
+.code-block{background:var(--code);border-radius:12px;padding:20px 24px;border:1px solid rgba(255,94,30,.3);flex:1;overflow:hidden;display:flex;flex-direction:column;gap:3px}
+.cl{font-family:var(--mono);font-size:11.5px;line-height:1.6}
+.cm{color:var(--orange);font-weight:700}.cw{color:#fff}.cg{color:var(--green);font-weight:700}.cd{color:var(--muted-d)}.cb2{color:#7dd3fc}
+
+/* ── Image slots ── */
+.img-slot{border-radius:12px;overflow:hidden;position:relative;flex-shrink:0}
+.img-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.img-overlay{position:absolute;bottom:0;left:0;right:0;background:var(--dark);padding:10px 16px}
+
+/* ── Alarm banner ── */
+.alarm-banner{border-radius:10px;padding:12px 20px;background:var(--red);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.alarm-banner.orange{background:rgba(80,20,0,1);border:1px solid var(--orange)}
+.alarm-text{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff}
+
+/* ── Footer ── */
+.footer{position:absolute;bottom:0;left:0;width:100%;height:42px;
+  display:flex;align-items:center;justify-content:space-between;padding:0 36px;z-index:10}
+.dark .footer{color:var(--muted-d);border-top:1px solid rgba(255,255,255,.06)}
+.stone .footer{color:var(--muted);border-top:1px solid var(--border)}
+.counter{font-size:10.5px;font-weight:700;letter-spacing:.1em;font-family:var(--mono)}
+.nav{display:flex;gap:8px}
+.nbtn{width:26px;height:26px;border-radius:6px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);color:inherit;cursor:pointer;font-size:11px;
+  display:flex;align-items:center;justify-content:center;transition:all .18s}
+.stone .nbtn{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
+.nbtn:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
+.progress{position:absolute;bottom:0;left:0;width:100%;height:3px;background:rgba(0,0,0,.1);z-index:11}
+.pbar{height:100%;background:var(--orange);transition:width .3s ease}
+
+/* Stat chips (slide 1) */
+.s1h{font-family:var(--serif);font-size:66px;font-weight:700;line-height:1.02;letter-spacing:-.03em;color:#fff;margin-bottom:16px}
+.s1sub{font-size:17px;line-height:1.5;color:var(--muted-d);margin-bottom:28px;max-width:900px}
+.chips{display:flex;gap:20px;border-top:1px solid rgba(255,255,255,.09);padding-top:20px}
+.chip{background:var(--dcard);border:1px solid var(--border-d);border-radius:10px;padding:10px 16px}
+.chip-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:3px}
+.chip-val{font-size:13px;font-weight:700;color:#fff}
+
+/* pill badge */
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:20px;
+  background:rgba(255,94,30,.14);border:1px solid rgba(255,94,30,.3);
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:18px;width:fit-content}
+
+/* Compare rows (result slides) */
+.cmp-row{background:var(--card);border-radius:10px;padding:13px 20px;border:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.cmp-lbl{font-size:12px;font-weight:700;min-width:140px}
+.cmp-eq{font-family:var(--mono);font-size:12px;flex:1;color:var(--charcoal)}
+.cmp-note{font-size:11px;color:var(--muted)}
+
+/* finding mini cards in 2x2 grid */
+.mini-g{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;flex:1}
+
+.hint{position:fixed;bottom:10px;font-size:10.5px;color:rgba(255,255,255,.28);letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ══════════════ SLIDE 1 — TITLE ══════════════ -->
+<div class="slide dark active" data-slide="1">
+  <div class="lbar"></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:940px">
+    <div class="pill">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      Hemodynamic Digital Twin
+    </div>
+    <div class="s1h">Dilraksh</div>
+    <p class="s1sub">Cybernetic In-Silico Hemodynamic Digital Twin — Multi-Stressor Biophysical Prediction, 2.5-Minute Lookahead Forecasting & Autonomous Triage Sentinel</p>
+    <div class="chips">
+      <div class="chip"><div class="chip-lbl">Edge Hardware</div><div class="chip-val">ESP32 + MAX30102 PPG</div></div>
+      <div class="chip"><div class="chip-lbl">Lookahead</div><div class="chip-val">2.5 Min Forecast</div></div>
+      <div class="chip"><div class="chip-lbl">Alarm Sentinel</div><div class="chip-val">|ΔBPM| ≥ 12 BPM</div></div>
+      <div class="chip"><div class="chip-lbl">Stressors</div><div class="chip-val">4 Biophysical Vectors</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 2 — ARCHITECTURE ══════════════ -->
+<div class="slide stone" data-slide="2">
+  <div class="kicker">System Pipeline</div>
+  <div class="stitle">Four-Tier Cybernetic Architecture</div>
+  <div class="divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;gap:0;flex:1;align-items:stretch">
+    <div class="card">
+      <div class="ck" style="color:var(--orange)">Tier 01</div>
+      <div class="ct">Sensor Edge</div>
+      <div class="cb">ESP32 + MAX30102 PPG broadcasts BPM & SpO₂ as CSV datagrams over UDP port 4210 at 1 Hz.</div>
+    </div>
+    <div class="g4h-arr">→</div>
+    <div class="card">
+      <div class="ck" style="color:var(--orange)">Tier 02</div>
+      <div class="ct">Demographics</div>
+      <div class="cb">Age-stratified baseline HR (80/72/68/70 BPM) + allostatic BMI multiplier (1.0× – 1.2×).</div>
+    </div>
+    <div class="g4h-arr">→</div>
+    <div class="card">
+      <div class="ck" style="color:var(--orange)">Tier 03</div>
+      <div class="ct">Biophysical Engine</div>
+      <div class="cb">Murburn equations synthesize 4 simultaneous stressor vectors into 2.5-min lookahead HR prediction.</div>
+    </div>
+    <div class="g4h-arr">→</div>
+    <div class="dcard" style="border-color:rgba(255,94,30,.4)">
+      <div class="ck" style="color:var(--orange)">Tier 04</div>
+      <div class="ct" style="color:#fff">Sentinel HUD</div>
+      <div class="cb">3D WebGL cardiac twin + 60 FPS radar waveform + |ΔBPM| ≥ 12 autonomous triage alarm engine.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 3 — ALL FORMULAS ══════════════ -->
+<div class="slide dark" data-slide="3">
+  <div class="kicker">Mathematical Formulation</div>
+  <div class="stitle">Complete Predictive Engine — All 6 Biophysical Equations</div>
+  <div class="divider"></div>
+  <div class="gstack">
+    <div class="ccard"><div class="cl cm">1  Kinetic Exercise Load</div><div class="cl cw">ΔHR_kinetic  =  PeakBPM × β_BMI × exp(−3.0 × Δt / 10)</div><div class="cl cd">Light +20 · Moderate +50 · Heavy +80 BPM — 10-min exponential recovery decay</div></div>
+    <div class="ccard"><div class="cl cm">2  Caffeine Pharmacokinetics</div><div class="cl cw">ΔHR_caff  =  Amp(Age) × Cups × β_BMI × α(t) × exp(−k × Δt)</div><div class="cl cd">k = 0.0035/min teen → 0.0018/min elderly · peak absorption 15–45 min</div></div>
+    <div class="ccard"><div class="cl cm">3  Splanchnic GI Redirection</div><div class="cl cw">ΔHR_meal  =  Peak × sin/cos_asymmetric(Δt) × β_BMI</div><div class="cl cd">Light +4 BPM @30m · Medium +8 @45m · Heavy +14 BPM @60m · 45% mesenteric flow</div></div>
+    <div class="ccard"><div class="cl cm">4  Cutaneous Thermoregulation</div><div class="cl cw">ΔHR_heat  =  max(0, Temp − 24.0) × M_heat(Age) × β_BMI</div><div class="cl cd">+1.5 BPM/°C adults · +2.0 BPM/°C children/elderly — threshold at 24°C</div></div>
+    <div class="ccard"><div class="cl cm">5  Physiological HR Ceiling</div><div class="cl cw" style="color:var(--red)">HR_max  =  220 − Age    [STRICT HARD CAP — ALL STRESSORS CLAMPED BELOW]</div><div class="cl cd">BMI compounding accelerates ceiling exhaustion in obese subjects</div></div>
+    <div class="ccard"><div class="cl cm">6  Biological Inertia Law</div><div class="cl cw">HR_actual(t+1)  =  HR_actual(t)  +  0.04 × (HR_pred − HR_actual)  +  ε_HRV</div><div class="cl cd">~4% convergence/sec — models 2–3 min autonomic ramp-up latency</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 4 — EXERCISE FORMULA ══════════════ -->
+<div class="slide stone" data-slide="4">
+  <div class="kicker">Stressor 01 — Kinetic Exertion</div>
+  <div class="stitle">Exercise Load Formula & Exponential Recovery Model</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:20px;flex:1">
+    <div style="width:38%;flex-shrink:0;display:flex;flex-direction:column;gap:0;border-radius:12px;overflow:hidden">
+      <img src="physical_activity.jpg" style="width:100%;flex:1;object-fit:cover;display:block" onerror="this.style.background='#1a202c';this.alt='Physical Activity'">
+      <div style="background:var(--dark);padding:10px 16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)">Physical Activity Stressor</div>
+        <div style="font-size:11px;color:var(--muted-d)">Kinetic demand — exponential decay recovery curve</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+      <div class="ccard">
+        <div class="cl cm">Kinetic Load Equation</div>
+        <div class="cl cw">ΔHR_kinetic = PeakBPM × β_BMI × exp(−3.0 × Δt / 10)</div>
+        <div class="cl cd">Δt = minutes since exercise started · PeakBPM = intensity-dependent spike</div>
+      </div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--muted)">RESTING</div><div style="font-family:var(--mono);font-size:12px;color:var(--charcoal)">+0 BPM · No cardiovascular demand above homeostatic baseline</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">LIGHT +20 BPM</div><div style="font-family:var(--mono);font-size:12px;color:var(--charcoal)">+22 BPM obese 1.2× · Brisk walk / yoga / gentle cycling</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">MODERATE +50 BPM</div><div style="font-family:var(--mono);font-size:12px;color:var(--charcoal)">+55 BPM obese 1.2× · Running / aerobics / fast cycling</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--red)">HEAVY +80 BPM</div><div style="font-family:var(--mono);font-size:12px;color:var(--charcoal)">+96 BPM obese 1.2× · Sprint / HIIT / heavy lifting — ceiling risk</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 5 — CAFFEINE PK ══════════════ -->
+<div class="slide stone" data-slide="5">
+  <div class="kicker">Stressor 02 — Caffeine Pharmacokinetics</div>
+  <div class="stitle">Age-Dependent Clearance Rate & Absorption Window</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:20px;flex:1">
+    <div style="width:38%;flex-shrink:0;display:flex;flex-direction:column;gap:0;border-radius:12px;overflow:hidden">
+      <img src="caffeine.jpg" style="width:100%;flex:1;object-fit:cover;display:block" onerror="this.style.background='#1a202c'">
+      <div style="background:var(--dark);padding:10px 16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)">Caffeine Intake Stressor</div>
+        <div style="font-size:11px;color:var(--muted-d)">PK absorption & age-stratified metabolic clearance</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+      <div class="ccard">
+        <div class="cl cm">Caffeine PK Equation</div>
+        <div class="cl cw">ΔHR_caff = Amp(Age) × Cups × β_BMI × α(t) × exp(−k × Δt)</div>
+        <div class="cl cd">α(t) = absorption ramp 0→1 over 15–45 min · k = age-stratified clearance rate</div>
+      </div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">Children &lt;13y — Spike +15 BPM/cup</div><div style="font-size:11.5px;color:var(--muted)">k=0.0040/min · High sensitivity via underdeveloped CYP450 enzyme system</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">Teenagers 13–19y — Spike +10 BPM/cup</div><div style="font-size:11.5px;color:var(--muted)">k=0.0035/min · Elevated adenosine receptor sensitivity · peak at 30 min · clears 6h</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">Adults 20–64y — Spike +8 BPM/cup</div><div style="font-size:11.5px;color:var(--muted)">k=0.0030/min · Standard hepatic CYP1A2 enzymatic clearance · 5–6 hour half-life</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--amber)">Older Adults 65+y — Spike +6 BPM/cup</div><div style="font-size:11.5px;color:var(--muted)">k=0.0018/min · Reduced hepatic enzyme efficiency — caffeine persists 8+ hours</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 6 — MEAL / SPLANCHNIC ══════════════ -->
+<div class="slide stone" data-slide="6">
+  <div class="kicker">Stressor 03 — Meal & Splanchnic Redirect</div>
+  <div class="stitle">Postprandial GI Vascular Shift & Circulatory Steal</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:20px;flex:1">
+    <div style="width:38%;flex-shrink:0;display:flex;flex-direction:column;gap:0;border-radius:12px;overflow:hidden">
+      <img src="meal.jpg" style="width:100%;flex:1;object-fit:cover;display:block" onerror="this.style.background='#1a202c'">
+      <div style="background:var(--dark);padding:10px 16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)">Meal Digestion Stressor</div>
+        <div style="font-size:11px;color:var(--muted-d)">Splanchnic blood redirect — mesenteric vasodilation</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+      <div class="ccard">
+        <div class="cl cm">Splanchnic Steal Equation</div>
+        <div class="cl cw">ΔHR_meal = Peak × sin/cos_asymmetric(Δt) × β_BMI</div>
+        <div class="cl cd">45% mesenteric flow rerouted · drops central venous return & stroke volume</div>
+      </div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">Light Meal — +4 BPM peak @30min · 1.0hr decay</div><div style="font-size:11.5px;color:var(--muted)">Salad, soup — minimal splanchnic vasodilation demand</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">Medium Meal — +8 BPM peak @45min · 2.0hr decay</div><div style="font-size:11.5px;color:var(--muted)">Moderate mesenteric flow with compensatory HR rise</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--red)">Heavy Meal — +14 BPM peak @60min · 3.5hr decay</div><div style="font-size:11.5px;color:var(--muted)">45% cardiac output to GI — significant circulatory steal effect on central volume</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--amber)">Older Adults — +10 BPM max · Extended decay ×1.4</div><div style="font-size:11.5px;color:var(--muted)">Reduced baroreceptor sensitivity compounds postprandial hypotension risk</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 7 — HEAT ══════════════ -->
+<div class="slide stone" data-slide="7">
+  <div class="kicker">Stressor 04 — Cutaneous Thermoregulation</div>
+  <div class="stitle">Peripheral Vasodilation Above 24°C Thermoneutral Threshold</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:20px;flex:1">
+    <div style="width:38%;flex-shrink:0;display:flex;flex-direction:column;gap:0;border-radius:12px;overflow:hidden">
+      <img src="heat_exposure.jpg" style="width:100%;flex:1;object-fit:cover;display:block" onerror="this.style.background='#1a202c'">
+      <div style="background:var(--dark);padding:10px 16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)">Environmental Heat Stressor</div>
+        <div style="font-size:11px;color:var(--muted-d)">Cutaneous sympathetic cholinergic vasodilatation</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+      <div class="ccard">
+        <div class="cl cm">Thermoregulatory Equation</div>
+        <div class="cl cw">ΔHR_heat = max(0, Temp − 24.0) × M_heat(Age) × β_BMI</div>
+        <div class="cl cd">Zero HR impact below 24°C thermoneutral zone · M_heat = +1.5 to +2.0 BPM/°C</div>
+      </div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--green)">24°C Thermoneutral — +0.0 BPM</div><div style="font-size:11.5px;color:var(--muted)">Baseline — no cutaneous vasodilation demand activated</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">28°C Mild Warmth — +6–8 BPM</div><div style="font-size:11.5px;color:var(--muted)">Peripheral dilation begins — blood pooling in skin reduces stroke volume</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">32°C Hot Ambient — +12–16 BPM</div><div style="font-size:11.5px;color:var(--muted)">Significant venodilation — cardiac output compensates with elevated heart rate</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--red)">38°C Extreme Heat — +21–28 BPM</div><div style="font-size:11.5px;color:var(--muted)">Heat stroke risk zone — autonomic exhaustion in elderly & obese 1.2× cohorts</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 8 — LOOKAHEAD + INERTIA ══════════════ -->
+<div class="slide dark" data-slide="8">
+  <div class="kicker">Prediction Engine</div>
+  <div class="stitle">2.5-Minute Lookahead & Biological Inertia Convergence Law</div>
+  <div class="divider"></div>
+  <div class="g2">
+    <div class="ccard">
+      <div class="cl cm" style="margin-bottom:4px">LOOKAHEAD HORIZON — 2.5 MINUTE FORECAST</div>
+      <div style="font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;margin-bottom:10px">Forward Prediction Engine</div>
+      <div class="cl cw" style="margin-bottom:8px">HR_pred(t) = Baseline + Σ[ΔHR_stressors(t + 2.5min)]</div>
+      <ul class="bl">
+        <li>All 4 stressor equations evaluate at <strong>t + 2.5 minutes ahead</strong> — not current time</li>
+        <li>Twin forecasts where cardiovascular demand <em>will be</em>, not where it is now</li>
+        <li>Physical body has not caught up yet — biological ramp-up takes 2–3 min</li>
+        <li>Eliminates false alarms during normal exercise onset transients</li>
+        <li>Enables early warning before decompensation physically manifests</li>
+      </ul>
+    </div>
+    <div class="ccard">
+      <div class="cl cm" style="margin-bottom:4px">BIOLOGICAL INERTIA CONVERGENCE LAW</div>
+      <div style="font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;margin-bottom:10px">Cardiovascular Ramp-Up Model</div>
+      <div class="cl cw" style="margin-bottom:8px">HR_actual(t+1) = HR_actual(t) + 0.04 × (HR_pred − HR_actual) + ε</div>
+      <ul class="bl">
+        <li>Physical pulse moves at <strong>~4% progress/second</strong> toward predicted target</li>
+        <li>Mitochondrial VO₂ demand spikes instantly — cardiac output recruits over 2–3 min</li>
+        <li>ε_HRV = natural ±0.4 BPM sensor noise added for physiological realism</li>
+        <li>Resting homeostasis: physical pulse converges to within ±2 BPM of twin</li>
+        <li>Dual outputs: current (physical) vs predicted (twin) displayed simultaneously</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 9 — ALARM SENTINEL ══════════════ -->
+<div class="slide dark" data-slide="9">
+  <div class="kicker">Diagnostic Triage Engine</div>
+  <div class="stitle">Cybernetic Mismatch Detection & Autonomous Alarm Sentinel</div>
+  <div class="divider"></div>
+  <div class="ccard" style="flex-shrink:0;margin-bottom:14px;border-color:rgba(239,68,68,.5)">
+    <div class="cl" style="font-size:9px;font-weight:700;color:var(--red);letter-spacing:.12em">CRITICAL ALARM CRITERION — PERSISTENT FOR 180 SECONDS</div>
+    <div class="cl cw" style="font-size:16px">|ΔBPM|  =  |HR_actual − HR_predicted|  ≥  12.0 BPM</div>
+  </div>
+  <div class="g2">
+    <div class="ccard" style="border-color:rgba(239,68,68,.5)">
+      <div class="ck" style="color:var(--red)">Negative Drift (ΔBPM ≤ −12)</div>
+      <div class="ct" style="color:#fff">Autonomic / Chronotropic Incompetence</div>
+      <ul class="bl">
+        <li>Physical pulse FAILS to accelerate despite high predicted kinetic demand</li>
+        <li>Pathologies: Sick Sinus Syndrome, diabetic autonomic neuropathy, beta-blocker toxicity</li>
+        <li>Risk: Inadequate cerebral perfusion, exertional syncope, cardiovascular collapse</li>
+        <li>Alarm: 880 Hz alternating tone + red flashing banner</li>
+      </ul>
+    </div>
+    <div class="ccard" style="border-color:rgba(255,94,30,.5)">
+      <div class="ck" style="color:var(--orange)">Positive Drift (ΔBPM ≥ +12)</div>
+      <div class="ct" style="color:#fff">Unexplained Tachycardia / Arrhythmic Surge</div>
+      <ul class="bl">
+        <li>Physical pulse SURGES with zero stressor inputs logged in digital twin</li>
+        <li>Pathologies: Paroxysmal SVT, A-Fib with RVR, concealed hemorrhage, hypovolemic shock</li>
+        <li>Risk: Coronary hypoperfusion, diastolic underfilling, ventricular fatigue</li>
+        <li>Alarm: 1760 Hz alternating tone + orange flashing banner</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 10 — RESULT: OBESITY ══════════════ -->
+<div class="slide stone" data-slide="10">
+  <div class="kicker">Result 01 — Exercise & Obesity Ceiling</div>
+  <div class="stitle">Accelerated Cardiac Reserve Exhaustion Under BMI Compounding</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:18px;flex:1;align-items:flex-start">
+    <img src="physical_activity.jpg" style="width:220px;height:160px;object-fit:cover;border-radius:12px;flex-shrink:0" onerror="this.style.background='#1a202c'">
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div class="dcard" style="border-color:rgba(255,94,30,.4)">
+        <div style="font-size:10px;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase">Key Finding</div>
+        <div style="font-size:13px;font-weight:700;color:#fff">Obese subjects reach HR_max = 202 BPM at &lt;48% of the kinetic load required by a lean adult</div>
+      </div>
+      <div class="card card-hl-g"><div class="cmp-lbl" style="color:var(--green)">Normal BMI (1.0×)</div><div class="cmp-eq">Heavy Exercise +80 BPM → 68 + 80 = 148 BPM → Reserve: 202 − 148 = <strong>54 BPM remaining</strong></div></div>
+      <div class="card card-hl-r"><div class="cmp-lbl" style="color:var(--red)">Obese BMI (1.2×)</div><div class="cmp-eq">Heavy Exercise +96 BPM → 76 + 96 = 172 BPM → Reserve: 202 − 172 = <strong>30 BPM — CRITICALLY LOW!</strong></div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--charcoal);margin-bottom:4px">Biophysical Interpretation</div><div style="font-size:11.5px;color:var(--muted);line-height:1.6">The 1.2× β_BMI allostatic multiplier amplifies every stressor vector proportionally. Non-linear compounding means obese subjects exhaust their cardiovascular reserve under half the external work — dramatically increasing exertional collapse risk.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 11 — RESULT: CIRCULATORY STEAL ══════════════ -->
+<div class="slide stone" data-slide="11">
+  <div class="kicker">Result 02 — Compounding Circulatory Steal</div>
+  <div class="stitle">Splanchnic + Cutaneous Vasodilation: Blood Pooling & MAP Spike</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:14px;flex-shrink:0;margin-bottom:14px">
+    <img src="meal.jpg" style="width:180px;height:130px;object-fit:cover;border-radius:12px" onerror="this.style.background='#1a202c'">
+    <div style="display:flex;align-items:center;font-size:28px;font-weight:800;color:var(--orange);padding:0 8px">+</div>
+    <img src="heat_exposure.jpg" style="width:180px;height:130px;object-fit:cover;border-radius:12px" onerror="this.style.background='#1a202c'">
+    <div style="display:flex;align-items:center;font-size:28px;font-weight:800;color:var(--orange);padding:0 8px">=</div>
+    <div class="dcard" style="flex:1;border-color:rgba(255,94,30,.4)">
+      <div style="font-size:9px;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase">Combined Effect</div>
+      <div style="font-family:var(--serif);font-size:20px;font-weight:700;color:#fff">+26 BPM Total Steal</div>
+      <div style="font-size:11px;color:var(--muted-d)">MAP rises to 138/86 mmHg — sympathetic reflex to preserve cerebral perfusion</div>
+    </div>
+  </div>
+  <div class="mini-g">
+    <div class="card"><div class="ck" style="color:var(--orange)">Splanchnic GI</div><div style="font-size:16px;font-weight:700;color:var(--orange);font-family:var(--serif)">+14 BPM</div><div class="cb">45% mesenteric flow → drops central venous return → stroke volume falls</div></div>
+    <div class="card"><div class="ck" style="color:var(--orange)">Cutaneous Vasodilatation</div><div style="font-size:16px;font-weight:700;color:var(--orange);font-family:var(--serif)">+12 BPM at 32°C</div><div class="cb">Peripheral venodilation pools blood in skin → reduces preload & diastolic filling</div></div>
+    <div class="card card-hl-r"><div class="ck" style="color:var(--red)">Combined Steal</div><div style="font-size:16px;font-weight:700;color:var(--red);font-family:var(--serif)">Central Volume ↓↓</div><div class="cb">Frank-Starling mechanism strained — compensatory tachycardia triggered</div></div>
+    <div class="card"><div class="ck" style="color:var(--green)">Compensatory MAP</div><div style="font-size:16px;font-weight:700;color:var(--green);font-family:var(--serif)">138/86 mmHg</div><div class="cb">Reflex vasoconstriction + rate rise to maintain cerebral perfusion pressure</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 12 — RESULT: OXYGEN DEBT AUC ══════════════ -->
+<div class="slide stone" data-slide="12">
+  <div class="kicker">Result 03 — Oxygen Debt Quantification</div>
+  <div class="stitle">AUC Lag Between Metabolic Demand & Pacemaker Response</div>
+  <div class="divider"></div>
+  <div style="display:flex;gap:18px;flex:1">
+    <img src="physical_activity.jpg" style="width:220px;object-fit:cover;border-radius:12px;flex-shrink:0" onerror="this.style.background='#1a202c'">
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+      <div class="dcard" style="border-color:rgba(255,94,30,.4)">
+        <div style="font-size:11px;font-weight:700;color:#fff">Key Finding: Traditional telemetry completely masks the oxygen debt accumulation window</div>
+      </div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--orange)">01 — Demand Spike (t = 0)</div><div style="font-size:11.5px;color:var(--muted)">Cellular VO₂ rises instantly at exercise onset — mitochondria immediately consume O₂ at elevated rates proportional to workload intensity.</div></div>
+      <div class="card card-hl-r"><div style="font-size:11px;font-weight:700;color:var(--red)">02 — Pacemaker Lag (t = 0 to t + 3min)</div><div style="font-size:11.5px;color:var(--muted)">SA node and ANS respond progressively via the 4%/s inertia model. During this lag, O₂ demand FAR EXCEEDS supply — oxygen debt accumulates as AUC between the two curves.</div></div>
+      <div class="card card-hl-g"><div style="font-size:11px;font-weight:700;color:var(--green)">03 — AUC = Accumulated Debt</div><div style="font-size:11.5px;color:var(--muted)">Dilraksh integrates the area under the demand-vs-actual curve to quantify accumulated O₂ debt and forecasts required recovery duration before exercise can safely resume.</div></div>
+      <div class="card"><div style="font-size:11px;font-weight:700;color:var(--amber)">04 — Recovery Window Prediction</div><div style="font-size:11.5px;color:var(--muted)">Twin predicts when actual HR re-converges to resting baseline, giving exact safe re-exertion windows — preventing premature return after cardiovascular stress.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 13 — RESULT: BRADYCARDIA ══════════════ -->
+<div class="slide dark" data-slide="13">
+  <div class="kicker">Result 04 — Autonomic Failure Case</div>
+  <div class="stitle">Chronotropic Incompetence: Pulse Cannot Track Demand</div>
+  <div class="divider"></div>
+  <div class="alarm-banner" style="margin-bottom:14px;flex-shrink:0">
+    <div class="alarm-text">🚨 ALARM TRIGGERED · ΔBPM = −18 BPM · Physical HR: 42 BPM · Predicted: 60 BPM · STATUS: AUTONOMIC FAILURE</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:10px;flex:1">
+    <div class="ccard" style="border-color:rgba(239,68,68,.5)"><div class="ck" style="color:var(--red)">Observed Pattern</div><div class="cb">Physical pulse STUCK at 42 BPM despite heavy exercise demand — twin predicts +80 BPM but actual HR refuses to rise</div></div>
+    <div class="ccard" style="border-color:rgba(239,68,68,.5)"><div class="ck" style="color:var(--red)">Root Pathologies</div><div class="cb">Sick Sinus Syndrome · Diabetic Autonomic Neuropathy · Beta-blocker over-titration · SA node dysfunction</div></div>
+    <div class="ccard"><div class="ck" style="color:var(--orange)">Physiological Mechanism</div><div class="cb">SA node fails to respond to sympathetic β1-adrenergic stimulation — chronotropic incompetence prevents cardiac acceleration</div></div>
+    <div class="ccard"><div class="ck" style="color:var(--orange)">Clinical Risk Profile</div><div class="cb">Inadequate cerebral perfusion · Syncope risk · Exertional collapse · Lactic acidosis from anaerobic metabolism</div></div>
+    <div class="ccard"><div class="ck" style="color:var(--green)">Digital Twin Advantage</div><div class="cb">Only a lookahead model detects this — conventional monitoring sees "normal" 42 BPM and raises no alarm. Dilraksh flags the CONTEXT mismatch instantly</div></div>
+    <div class="ccard" style="border-color:rgba(239,68,68,.4)"><div class="ck" style="color:var(--red)">Platform Response</div><div class="cb">880 Hz medical tone + red flashing banner + AUTONOMIC INCOMPETENCE classification in triage HUD</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 14 — RESULT: TACHYCARDIA ══════════════ -->
+<div class="slide dark" data-slide="14">
+  <div class="kicker">Result 05 — Unexplained Tachycardia Case</div>
+  <div class="stitle">Positive Drift: Pulse Surges With Zero Stressor Input</div>
+  <div class="divider"></div>
+  <div class="alarm-banner orange" style="margin-bottom:14px;flex-shrink:0">
+    <div class="alarm-text" style="color:var(--orange)">⚠ ALARM TRIGGERED · ΔBPM = +22 BPM · Physical HR: 145 BPM · Predicted: 68 BPM · NO STRESSORS LOGGED</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:10px;flex:1">
+    <div class="ccard" style="border-color:rgba(255,94,30,.5)"><div class="ck" style="color:var(--orange)">Observed Pattern</div><div class="cb">Physical pulse surges to 145 BPM — ZERO stressors active. Twin correctly predicts only 68 BPM (resting baseline)</div></div>
+    <div class="ccard" style="border-color:rgba(255,94,30,.5)"><div class="ck" style="color:var(--orange)">Root Pathologies</div><div class="cb">Paroxysmal SVT (AVNRT/AVRT) · A-Fib with RVR · Concealed hemorrhage · Septic shock · Panic disorder surge</div></div>
+    <div class="ccard"><div class="ck" style="color:var(--orange)">Physiological Mechanism</div><div class="cb">Ectopic pacemaker activity, re-entrant AV node circuit, or massive catecholamine surge generates rate far exceeding metabolic need</div></div>
+    <div class="ccard"><div class="ck" style="color:var(--orange)">Clinical Risk Profile</div><div class="cb">Diastolic filling critically shortened → ventricular underfilling → falling cardiac output → coronary hypoperfusion</div></div>
+    <div class="ccard"><div class="ck" style="color:var(--green)">Digital Twin Advantage</div><div class="cb">Twin KNOWS no stressors were applied — making the surge unmistakably pathological. Standard monitoring cannot distinguish exercise vs SVT without this context</div></div>
+    <div class="ccard" style="border-color:rgba(255,94,30,.4)"><div class="ck" style="color:var(--orange)">Platform Response</div><div class="cb">1760 Hz medical tone + orange flashing banner + TACHYCARDIA/ARRHYTHMIA classification + immediate clinical consultation prompt</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 15 — DEMO/CLOSING ══════════════ -->
+<div class="slide dark" data-slide="15">
+  <div class="lbar"></div>
+  <div class="kicker">Live Prototype & Platform Access</div>
+  <div class="stitle">Interactive WebGL Twin & Simulation Lab</div>
+  <div class="divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;flex:1">
+    <div class="dcard card-hl-o"><div class="ct" style="color:var(--orange)">3D Cardiac Digital Twin</div><div class="cb">Three.js geodesic beating heart with dual-ventricle mesh, systolic contraction synced to pulse, and arterial electron particle flow visualizing cardiac output.</div></div>
+    <div class="dcard"><div class="ct" style="color:var(--orange)">60 FPS Radar Waveform</div><div class="cb">Dual-trace sweeping oscilloscope displaying actual physical pulse vs predicted twin demand curve with peach luminous gradient fill and live telemetry readouts.</div></div>
+    <div class="dcard"><div class="ct" style="color:var(--orange)">Simulation Lab</div><div class="cb">One-click Bradycardia (42 BPM) and Tachycardia (145 BPM) test triggers for live ΔBPM alarm validation, plus manual override sliders for all stressor vectors.</div></div>
+    <div class="dcard" style="border-color:rgba(255,94,30,.4)"><div class="ct" style="color:var(--orange)">Multi-Stressor Controls</div><div class="cb">Simultaneous exercise intensity, caffeine cup count, meal size, and temperature sliders driving the Murburn biophysical prediction engine in real time at 1 Hz.</div></div>
+  </div>
+  <div style="margin-top:14px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--orange);text-align:center">
+    http://localhost:8000/dashboard_prototype.html  ·  Dilraksh PRO — Hemodynamic Digital Twin
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- ── Shared Footer (outside deck, positioned absolute) ── -->
+<div id="globalFooter" style="position:absolute;bottom:calc((100vh - min(calc(96vw*(9/16)),96vh))/2);left:0;width:100%;pointer-events:none">
+  <div id="footerInner" style="
+    position:absolute;bottom:0;left:50%;
+    transform:translateX(-50%);
+    width:min(96vw,calc(96vh*(16/9)));
+    max-width:1440px;
+    height:42px;
+    display:flex;align-items:center;justify-content:space-between;padding:0 36px;
+    pointer-events:all;z-index:20;
+  ">
+    <span id="counter" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.45)">01 / 15</span>
+    <div style="display:flex;gap:8px">
+      <button id="prevBtn" class="nbtn" style="pointer-events:all">←</button>
+      <button id="nextBtn" class="nbtn" style="pointer-events:all">→</button>
+      <button id="fsBtn" class="nbtn" style="font-size:9px;pointer-events:all">⛶</button>
+    </div>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div style="position:absolute;bottom:calc((100vh - min(calc(96vw*(9/16)),96vh))/2);left:50%;transform:translateX(-50%);
+  width:min(96vw,calc(96vh*(16/9)));max-width:1440px;height:3px;background:rgba(0,0,0,.15);z-index:20;border-radius:0 0 16px 16px;overflow:hidden">
+  <div id="pbar" style="height:100%;width:6.67%;background:var(--orange);transition:width .3s ease"></div>
+</div>
+
+<div class="hint">← / → or Space to navigate · F for Fullscreen</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const total = slides.length;
+let cur = 0;
+
+const counter = document.getElementById('counter');
+const pbar    = document.getElementById('pbar');
+
+function go(idx){
+  if(idx < 0 || idx >= total) return;
+  slides[cur].classList.remove('active');
+  cur = idx;
+  slides[cur].classList.add('active');
+  counter.textContent = `${String(cur+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+  pbar.style.width = `${((cur+1)/total)*100}%`;
+
+  // Counter color based on theme
+  const isDark = slides[cur].classList.contains('dark');
+  counter.style.color = isDark ? 'rgba(255,255,255,.4)' : 'rgba(0,0,0,.35)';
+  document.querySelectorAll('.nbtn').forEach(b=>{
+    if(isDark){ b.style.background='rgba(255,255,255,.06)'; b.style.borderColor='rgba(255,255,255,.15)'; b.style.color='rgba(255,255,255,.6)'; }
+    else{ b.style.background='rgba(0,0,0,.05)'; b.style.borderColor='rgba(0,0,0,.12)'; b.style.color='rgba(0,0,0,.5)'; }
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click',()=>go(cur-1));
+document.getElementById('nextBtn').addEventListener('click',()=>go(cur+1));
+document.getElementById('fsBtn').addEventListener('click',()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen().catch(()=>{});
+});
+
+window.addEventListener('keydown',e=>{
+  if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key.toLowerCase()==='f'){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  }
+});
+
+go(0);
+</script>
+</body>
+</html>
