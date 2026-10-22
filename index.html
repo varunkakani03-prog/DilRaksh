@@ -1,1 +1,3404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dilraksh PRO - Hemodynamic Digital Twin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@500;600;700;800&family=Tenor+Sans&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Roclette Pro';
+      src: url('roclette_pro_bold.woff2') format('woff2'),
+           url('roclette_pro_bold.ttf') format('truetype'),
+           url('https://db.onlinewebfonts.com/t/c8d10760b49ef9163cb43e459e71b80e.woff2') format('woff2');
+      font-weight: 600 700 800 900;
+      font-style: normal;
+      font-display: swap;
+    }
 
+    @font-face {
+      font-family: 'Roclette';
+      src: url('roclette_pro_bold.woff2') format('woff2'),
+           url('roclette_pro_bold.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --bg-base: #F1F3F6;
+      --bg-sidebar: #F8F9FA;
+      --bg-card: #FFFFFF;
+      --bg-card-solid: #FFFFFF;
+      --bg-card-subtle: #F9FAFB;
+      --bg-hover: #F3F4F6;
+      --border-subtle: #E5E7EB;
+      --border-specular: #D1D5DB;
+      --border-focus: #FF5E1E;
+      --orange: #FF5E1E;
+      --orange-glow: rgba(255, 94, 30, 0.35);
+      --cyan: #FF5E1E;
+      --cyan-glow: rgba(255, 94, 30, 0.35);
+      --red: #EF4444;
+      --red-glow: rgba(239, 68, 68, 0.35);
+      --green: #10B981;
+      --green-glow: rgba(16, 185, 129, 0.25);
+      --charcoal: #111827;
+      --caramel: #FF5E1E;
+      --text-main: #111827;
+      --text-secondary: #4B5563;
+      --text-muted: #9CA3AF;
+      --font-display: 'Roclette Pro', 'Roclette', 'Syne', 'Outfit', sans-serif;
+      --font-luxury: 'Roclette Pro', 'Roclette', 'Syne', 'Tenor Sans', sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Chakra Petch', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle 650px at 90% 15%, rgba(255, 94, 30, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 900px 450px at 10% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 65%);
+      background-attachment: fixed;
+      background-size: cover;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Dilraksh PRO Left Navigation Sidebar */
+    aside.sidebar {
+      width: 250px;
+      min-width: 250px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-header {
+      padding: 22px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      cursor: pointer;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: #FF5E1E;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.25rem;
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(255, 94, 30, 0.35);
+    }
+
+    .brand-text h2 {
+      font-family: var(--font-luxury);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-pro {
+      background: #10B981;
+      color: #FFFFFF;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-text p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+    }
+
+    .nav-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+    }
+
+    .nav-category {
+      font-family: var(--font-luxury);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 14px 14px 6px 14px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      color: #6B7280;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover {
+      background: #E5E7EB;
+      color: #111827;
+    }
+
+    .nav-item.active {
+      background: #111827;
+      color: #FFFFFF;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(17, 24, 39, 0.16);
+      border: none;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.8;
+      stroke-width: 2;
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+      stroke: #FFFFFF;
+    }
+
+    .user-footer {
+      margin: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #111827;
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .user-footer:hover {
+      transform: translateY(-2px);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #FF5E1E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(255, 94, 30, 0.35);
+    }
+
+    .user-info p.name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .user-info p.sub {
+      font-size: 0.68rem;
+      color: #9CA3AF;
+    }
+
+    /* Main Content */
+    main.content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* Top Navigation Bar */
+    header.topbar {
+      height: 68px;
+      background-color: #FFFFFF;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .header-title h1 {
+      font-family: var(--font-luxury);
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #111827;
+    }
+
+    .luxury-kicker {
+      font-family: var(--font-luxury);
+      text-transform: uppercase;
+      letter-spacing: 0.32em;
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: #FF5E1E;
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+
+    .header-title p {
+      font-size: 0.72rem;
+      color: #6B7280;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #065F46;
+      cursor: pointer;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .btn-sound-toggle {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      color: #374151;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .btn-sound-toggle:hover {
+      background: #F3F4F6;
+      color: #111827;
+      border-color: #D1D5DB;
+    }
+
+    .btn-sound-toggle.active {
+      color: #FF5E1E;
+      border-color: #FF5E1E;
+      background: #FFF5F1;
+    }
+
+    .btn-reset {
+      background: #111827;
+      border: none;
+      color: #FFFFFF;
+      padding: 7px 16px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(17, 24, 39, 0.12);
+    }
+
+    .btn-reset:hover {
+      background: #FF5E1E;
+      box-shadow: 0 4px 14px rgba(255, 94, 30, 0.35);
+    }
+
+    /* Dilraksh PRO Tab Pills Bar */
+    .tab-pills-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: transparent;
+      border-bottom: 1px solid var(--border-subtle);
+      overflow-x: auto;
+    }
+
+    .tab-pill {
+      font-family: var(--font-luxury);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #6B7280;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .tab-pill:hover {
+      color: #111827;
+      background: #F3F4F6;
+    }
+
+    .tab-pill.active {
+      color: #FFFFFF;
+      background: #111827;
+      border-color: #111827;
+      box-shadow: 0 4px 12px rgba(17, 24, 39, 0.16);
+    }
+
+    /* Page Container */
+    .dashboard-body {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* ========================================================= */
+    /* FLASHING EMERGENCY ALERT ALARM BANNER                     */
+    /* ========================================================= */
+    .alarm-banner {
+      background: linear-gradient(90deg, #FEF2F2 0%, #FEE2E2 50%, #FEF2F2 100%);
+      border: 2px solid var(--red);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
+      animation: alert-flash 1s infinite alternate;
+    }
+
+    @keyframes alert-flash {
+      0% {
+        border-color: #EF4444;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+      }
+      100% {
+        border-color: #DC2626;
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+      }
+    }
+
+    .alarm-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .alarm-siren {
+      font-size: 1.8rem;
+      animation: siren-wobble 0.8s infinite;
+    }
+
+    @keyframes siren-wobble {
+      0%, 100% { transform: rotate(-8deg) scale(1); }
+      50% { transform: rotate(8deg) scale(1.15); }
+    }
+
+    .alarm-text h3 {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #991B1B;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alarm-badge-tag {
+      background: var(--red);
+      color: #FFF;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.8px;
+    }
+
+    .alarm-text p {
+      font-size: 0.75rem;
+      color: #B91C1C;
+      margin-top: 3px;
+    }
+
+    .alarm-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-alarm-action {
+      background: #FFFFFF;
+      border: 1px solid #FCA5A5;
+      color: #B91C1C;
+      padding: 7px 16px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-alarm-action:hover {
+      background: #DC2626;
+      color: #FFFFFF;
+      border-color: #DC2626;
+    }
+
+    /* ========================================================= */
+    /* 3D PERSPECTIVE & CARD DEPTH SYSTEM                       */
+    /* ========================================================= */
+    .card-3d {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      will-change: transform;
+    }
+
+    .card-3d:hover {
+      box-shadow: 
+        0 14px 34px -4px rgba(17, 24, 39, 0.08),
+        0 4px 12px -2px rgba(17, 24, 39, 0.04);
+    }
+
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 5;
+    }
+
+    .card-3d .output-num,
+    .card-3d .kpi-value,
+    .card-3d .output-badge-top,
+    .card-3d .banner-chip {
+      transform: translateZ(16px);
+    }
+
+    /* ========================================================= */
+    /* DUAL OUTPUT HERO BANNER: DARK LUXURY CAMPUSHUB CONTRAST   */
+    /* ========================================================= */
+    .dual-output-hero {
+      background: 
+        radial-gradient(circle 380px at 85% 25%, rgba(255, 94, 30, 0.28) 0%, transparent 65%),
+        radial-gradient(circle 380px at 15% 75%, rgba(239, 68, 68, 0.18) 0%, transparent 60%),
+        #13161C;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 26px 34px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 28px;
+      box-shadow: 
+        0 14px 40px -8px rgba(17, 24, 39, 0.22),
+        0 0 25px rgba(255, 94, 30, 0.08);
+      position: relative;
+      overflow: hidden;
+      color: #FFFFFF;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .dual-output-hero.alarm-active {
+      border-color: var(--red);
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.4), inset 0 0 20px rgba(239, 68, 68, 0.15);
+    }
+
+    .dual-output-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--red);
+      box-shadow: 0 0 12px var(--red);
+    }
+
+    .dual-output-hero::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--orange);
+      box-shadow: 0 0 12px var(--orange);
+    }
+
+    .output-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .output-panel.current-panel {
+      padding-left: 8px;
+    }
+
+    .output-panel.predicted-panel {
+      text-align: right;
+      padding-right: 8px;
+      align-items: flex-end;
+    }
+
+    .output-badge-top {
+      font-family: var(--font-luxury);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      width: fit-content;
+      backdrop-filter: blur(8px);
+    }
+
+    .output-badge-top.red-badge {
+      background: rgba(239, 68, 68, 0.16);
+      color: #F87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .output-badge-top.cyan-badge {
+      background: rgba(255, 94, 30, 0.16);
+      color: #FF7A3D;
+      border: 1px solid rgba(255, 94, 30, 0.35);
+    }
+
+    .pulse-indicator-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .pulse-indicator-dot.red-dot {
+      background: #EF4444;
+      box-shadow: 0 0 10px #EF4444;
+      animation: pulse 1.2s infinite;
+    }
+
+    .pulse-indicator-dot.cyan-dot {
+      background: #FF5E1E;
+      box-shadow: 0 0 10px #FF5E1E;
+      animation: pulse 1.5s infinite;
+    }
+
+    .output-main-value {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .output-num {
+      font-family: var(--font-mono);
+      font-size: 3.8rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -1.5px;
+    }
+
+    .output-num.red-text {
+      color: #F87171;
+      text-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+    }
+
+    .output-num.cyan-text {
+      color: #FF5E1E;
+      text-shadow: 0 0 25px rgba(255, 94, 30, 0.4);
+    }
+
+    .output-unit {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #9CA3AF;
+    }
+
+    .output-meta p.output-name {
+      font-family: var(--font-luxury);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 0.03em;
+    }
+
+    .output-meta p.output-desc {
+      font-size: 0.73rem;
+      color: #9CA3AF;
+      margin-top: 3px;
+    }
+
+    /* 3D Holographic Twin Centerpiece Visualizer */
+    .output-vs-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+      position: relative;
+    }
+
+    .twin-3d-wrapper {
+      width: 175px;
+      height: 155px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      border-radius: 20px;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 94, 30, 0.22) 0%, rgba(20, 24, 33, 0.95) 75%);
+      border: 1px solid rgba(255, 94, 30, 0.35);
+      box-shadow: inset 0 0 30px rgba(255, 94, 30, 0.2), 0 0 25px rgba(255, 94, 30, 0.15);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .twin-3d-wrapper:active {
+      cursor: grabbing;
+    }
+
+    .twin-3d-wrapper canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    .twin-3d-hud-overlay {
+      position: absolute;
+      bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: calc(100% - 16px);
+      padding: 3px 8px;
+      background: rgba(17, 24, 39, 0.88);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+    }
+
+    .twin-3d-hud-tag {
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: #FF7A3D;
+    }
+
+    .twin-3d-hud-bpm {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+
+    /* Medical Healthcare Infographic Accent Badge */
+    .badge-internal-organs {
+      background: #111827;
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ecg-pulse-graphic {
+      width: 100%;
+      height: 22px;
+      opacity: 0.85;
+      overflow: visible;
+      filter: drop-shadow(0 0 6px rgba(255, 94, 30, 0.4));
+    }
+
+    .vs-gap-tag {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #10B981;
+      text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    .vs-gap-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #10B981;
+      background: rgba(16, 185, 129, 0.14);
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      transition: all 0.3s;
+    }
+
+    @media (max-width: 900px) {
+      .dual-output-hero {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        text-align: center;
+      }
+      .output-panel.predicted-panel {
+        text-align: center;
+        align-items: center;
+        padding-right: 0;
+      }
+      .output-panel.current-panel {
+        align-items: center;
+        padding-left: 0;
+      }
+      .output-vs-divider {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    /* Simulation Control Bar for Testing Mismatch */
+    .sim-testing-bar {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 20px -2px rgba(17, 24, 39, 0.03);
+    }
+
+    .sim-bar-title {
+      font-family: var(--font-luxury);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sim-bar-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-test {
+      background: #F3F4F6;
+      border: 1px solid var(--border-subtle);
+      color: #1F2937;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-test:hover {
+      background: #E5E7EB;
+      border-color: #D1D5DB;
+    }
+
+    .btn-test.alert-trigger {
+      border-color: #FCA5A5;
+      color: #DC2626;
+      background: #FEF2F2;
+    }
+
+    .btn-test.alert-trigger:hover {
+      background: #DC2626;
+      color: #FFFFFF;
+      border-color: #DC2626;
+    }
+
+    /* Section Cards Common */
+    .section-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 4px 20px -2px rgba(17, 24, 39, 0.03), 0 1px 3px rgba(17, 24, 39, 0.02);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .section-card.highlight {
+      border-color: #FF5E1E;
+      box-shadow: 0 0 25px rgba(255, 94, 30, 0.25);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-family: var(--font-luxury);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title span.number-badge {
+      background: #111827;
+      color: #FFFFFF;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    /* KPI Metrics Bar */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      box-shadow: 0 4px 18px -2px rgba(17, 24, 39, 0.03);
+    }
+
+    .kpi-card:hover {
+      border-color: #D1D5DB;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px -4px rgba(17, 24, 39, 0.08);
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .kpi-label {
+      font-family: var(--font-luxury);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #6B7280;
+      text-transform: uppercase;
+    }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1;
+      color: #111827;
+    }
+
+    .kpi-unit {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #9CA3AF;
+    }
+
+    .kpi-sub {
+      font-size: 0.68rem;
+      color: #9CA3AF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Section 1: Demographics */
+    .demographics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .demographics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-block {
+      background: #F9FAFB;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .control-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .control-title {
+      font-family: var(--font-luxury);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #374151;
+      text-transform: uppercase;
+    }
+
+    .control-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: #FF5E1E;
+      font-size: 0.95rem;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #FF5E1E;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(255, 94, 30, 0.4);
+      border: 2px solid #FFFFFF;
+    }
+
+    .bmi-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .btn-bmi {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-bmi.active {
+      background: #111827;
+      border-color: #111827;
+      box-shadow: 0 4px 12px rgba(17, 24, 39, 0.15);
+    }
+
+    .btn-bmi p.title {
+      font-family: var(--font-luxury);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+
+    .btn-bmi.active p.title {
+      color: #FFFFFF;
+    }
+
+    .btn-bmi p.desc {
+      font-size: 0.65rem;
+      color: #9CA3AF;
+    }
+
+    /* Section 2: Stressor Input Cards with Realistic Images */
+    .stressors-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 1150px) {
+      .stressors-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
+      .stressors-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stressor-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 20px -2px rgba(17, 24, 39, 0.03);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .stressor-card:hover {
+      border-color: #D1D5DB;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px -4px rgba(17, 24, 39, 0.08);
+    }
+
+    .stressor-banner {
+      height: 140px;
+      position: relative;
+      overflow: hidden;
+      background: #111;
+    }
+
+    .stressor-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .stressor-card:hover .stressor-banner img {
+      transform: scale(1.05);
+    }
+
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(17, 24, 39, 0.85) 100%);
+    }
+
+    .banner-chip {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(4px);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .banner-badge-title {
+      position: absolute;
+      bottom: 10px;
+      left: 14px;
+      font-family: var(--font-luxury);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #FFFFFF;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      text-transform: uppercase;
+    }
+
+    .stressor-content {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stressor-desc {
+      font-size: 0.72rem;
+      color: #4B5563;
+      line-height: 1.45;
+    }
+
+    .stressor-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-action-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: #F3F4F6;
+      border: 1px solid var(--border-subtle);
+      color: #1F2937;
+      padding: 8px 6px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #E5E7EB;
+    }
+
+    .btn-action.active {
+      background: #111827;
+      border-color: #111827;
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(17, 24, 39, 0.12);
+    }
+
+    .btn-action.primary {
+      background: #FF5E1E;
+      color: #FFFFFF;
+      border: none;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(255, 94, 30, 0.35);
+    }
+
+    .btn-action.primary:hover {
+      filter: brightness(1.08);
+    }
+
+    /* Section 3 & 4: Waveform & Telemetry */
+    .telemetry-row {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .telemetry-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-container {
+      position: relative;
+      height: 270px;
+      width: 100%;
+    }
+
+    canvas#waveformCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6B7280;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .metabolic-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .metabolic-card {
+      background: #F9FAFB;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metabolic-label p.title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .metabolic-label p.desc {
+      font-size: 0.65rem;
+      color: #9CA3AF;
+    }
+
+    .metabolic-readout {
+      text-align: right;
+    }
+
+    .metabolic-readout .val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #FF5E1E;
+    }
+
+    .metabolic-readout .unit {
+      font-size: 0.65rem;
+      color: #9CA3AF;
+      font-weight: 700;
+    }
+
+    /* Section 5: Active Stressors Queue */
+    .stressor-queue {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .queue-item {
+      background: #F9FAFB;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+
+    .queue-item:hover {
+      border-color: #D1D5DB;
+    }
+
+    .queue-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .queue-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #FFF5F1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .queue-info p.name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .queue-info p.time {
+      font-size: 0.68rem;
+      color: #9CA3AF;
+    }
+
+    .queue-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .queue-delta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #FF5E1E;
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: var(--red);
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .btn-delete:hover {
+      opacity: 1;
+    }
+
+    .empty-queue {
+      padding: 24px;
+      text-align: center;
+      color: #9CA3AF;
+      font-size: 0.78rem;
+    }
+
+    /* Section Dedicated View Panels */
+    .view-section {
+      display: block;
+    }
+
+    /* Detailed Biometrics Gauge Section */
+    .biometrics-feed-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .biometrics-feed-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .gauge-box {
+      background: #F9FAFB;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .pulse-ring {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .pulse-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--red);
+      opacity: 0.4;
+      animation: pulse-ring 1.2s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    /* UDP Console Terminal */
+    .udp-terminal {
+      background: #0F172A;
+      border: 1px solid #1E293B;
+      border-radius: 14px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #38BDF8;
+      max-height: 220px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+
+    /* Section 6: Spec Reference */
+    details.spec-accordion {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+    }
+
+    details.spec-accordion summary {
+      font-family: var(--font-luxury);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #111827;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    .spec-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.75rem;
+      line-height: 1.6;
+      color: #4B5563;
+    }
+
+    .spec-body ul {
+      margin-left: 20px;
+      margin-top: 6px;
+    }
+  
+    /* ========================================================= */
+    /* DILRAKSH DYNAMIC ANIMATIONS & INTERACTIVE MOTION ENGINE   */
+    /* ========================================================= */
+
+    /* Staggered Bento Entrance */
+    @keyframes bentoSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .bento-enter {
+      animation: bentoSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .bento-delay-1 { animation-delay: 0.06s; }
+    .bento-delay-2 { animation-delay: 0.12s; }
+    .bento-delay-3 { animation-delay: 0.18s; }
+    .bento-delay-4 { animation-delay: 0.24s; }
+    .bento-delay-5 { animation-delay: 0.30s; }
+
+    /* Concentric Cardiac Halo Breathing */
+    @keyframes cardiacHaloPulse {
+      0%, 100% {
+        transform: scale(0.96);
+        opacity: 0.45;
+        box-shadow: 0 0 20px rgba(255, 94, 30, 0.2);
+      }
+      50% {
+        transform: scale(1.06);
+        opacity: 0.85;
+        box-shadow: 0 0 45px rgba(255, 94, 30, 0.45);
+      }
+    }
+
+    .cardiac-halo-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 94, 30, 0.25);
+      pointer-events: none;
+      animation: cardiacHaloPulse 2.2s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    /* Floating Stressor Feedback Particle */
+    @keyframes floatParticleUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(0.9);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -24px) scale(1.08);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -46px) scale(0.95);
+      }
+    }
+
+    .floating-feedback-badge {
+      position: absolute;
+      pointer-events: none;
+      z-index: 999;
+      font-family: var(--font-luxury);
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      animation: floatParticleUp 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      white-space: nowrap;
+    }
+
+    /* Rhythmic Systolic Number Glow Pulse */
+    @keyframes systolicBeat {
+      0% {
+        transform: scale(1);
+      }
+      15% {
+        transform: scale(1.04);
+        filter: drop-shadow(0 0 16px rgba(255, 94, 30, 0.6));
+      }
+      30% {
+        transform: scale(1);
+      }
+      45% {
+        transform: scale(1.02);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .systolic-kick {
+      animation: systolicBeat 0.45s ease-out;
+    }
+
+    /* Homeostasis Breathing Status Tag */
+    @keyframes statusBreatheGreen {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.35);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.55);
+        border-color: rgba(16, 185, 129, 0.8);
+      }
+    }
+
+    .vs-gap-label.homeostasis-breathe {
+      animation: statusBreatheGreen 2.2s infinite ease-in-out;
+    }
+
+    /* Traveling Pulse Line Across Hero Centerpiece */
+    .hero-pulse-connector {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(239, 68, 68, 0.2) 20%, 
+        rgba(255, 94, 30, 0.35) 50%, 
+        rgba(255, 94, 30, 0.2) 80%, 
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .hero-pulse-spark {
+      position: absolute;
+      top: -3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #FF5E1E;
+      box-shadow: 0 0 12px #FF5E1E, 0 0 24px #FFA500;
+      animation: pulseSparkTravel 3.2s infinite linear;
+    }
+
+    @keyframes pulseSparkTravel {
+      0% { left: 5%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { left: 95%; opacity: 0; }
+    }
+
+    /* Specular Border Hover Sheen */
+    .section-card, .kpi-card, .stressor-card {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+    }
+
+    .section-card:hover, .kpi-card:hover, .stressor-card:hover {
+      border-color: rgba(255, 94, 30, 0.45);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Dilraksh PRO Left Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-header" onclick="switchNav('all')">
+      <div class="brand-icon" title="Dilraksh - Cardiovascular Guardian">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="luxury-kicker" style="font-size: 0.52rem; letter-spacing: 0.35em;">L U X U R Y</span>
+        <h2>Dilraksh <span class="badge-pro">PRO</span></h2>
+        <p>Cardiovascular Guardian & Twin</p>
+      </div>
+    </div>
+
+    <div class="nav-scroll">
+      <div class="nav-category">HEMODYNAMICS</div>
+      <div class="nav-item active" id="nav-all" onclick="switchNav('all')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Overview Dashboard
+      </div>
+      <div class="nav-item" id="nav-stressors" onclick="switchNav('stressors')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+        Stressor Modifiers
+      </div>
+      <div class="nav-item" id="nav-analytics" onclick="switchNav('analytics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        Twin Waveforms
+      </div>
+
+      <div class="nav-category">TWIN CORE</div>
+      <div class="nav-item" id="nav-demographics" onclick="switchNav('demographics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Demographics &amp; BMI
+      </div>
+      <div class="nav-item" id="nav-thermo" onclick="switchNav('thermo')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+        Thermodynamics
+      </div>
+    </div>
+
+    <div class="user-footer" onclick="switchNav('demographics')">
+      <div class="user-avatar" id="avatarAge">18</div>
+      <div class="user-info">
+        <p class="name" id="sidebarProfileName">Teenager (18y)</p>
+        <p class="sub" id="sidebarBmiStatus">Normal BMI (1.0x)</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <main class="content">
+    <header class="topbar">
+      <div class="header-title">
+        <span class="luxury-kicker">L U X U R Y &bull; C L I N I C A L &bull; H U D</span>
+        <h1 id="pageHeadingTitle">Dilraksh Hemodynamic Digital Twin</h1>
+        <p id="pageHeadingSubtitle">Cybernetic Physiological Modeling, Demographic Scaling & Real-Time Metabolic Prediction</p>
+      </div>
+      <div class="top-actions">
+        
+        <!-- Audio Alarm Toggle -->
+        <button class="btn-sound-toggle active" id="btnSoundToggle" onclick="toggleAudioAlarm()">
+          <span id="soundIcon">🔔</span>
+          <span id="soundLabel">Audio Alarm: ON</span>
+        </button>
+
+        <div class="status-pill" onclick="switchNav('udp')">
+          <div class="status-dot"></div>
+          <span id="topLinkStatus">UDP 4210 / SIMULATOR ACTIVE</span>
+        </div>
+        <button class="btn-reset" onclick="resetAll()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Reset Twin
+        </button>
+      </div>
+    </header>
+
+    <!-- Dilraksh PRO Section Filter Tabs -->
+    <div class="tab-pills-bar">
+      <button class="tab-pill active" id="tab-pill-all" onclick="switchNav('all')">
+        🌐 Overview
+      </button>
+      <button class="tab-pill" id="tab-pill-stressors" onclick="switchNav('stressors')">
+        ⚡ Stressor Modifiers
+      </button>
+      <button class="tab-pill" id="tab-pill-analytics" onclick="switchNav('analytics')">
+        📈 Twin Waveforms
+      </button>
+      <button class="tab-pill" id="tab-pill-demographics" onclick="switchNav('demographics')">
+        🧬 Demographic &amp; BMI
+      </button>
+      <button class="tab-pill" id="tab-pill-thermo" onclick="switchNav('thermo')">
+        🔥 Thermodynamics
+      </button>
+    </div>
+
+    <div class="dashboard-body">
+
+      <!-- ========================================================= -->
+      <!-- FLASHING EMERGENCY ALERT ALARM BANNER (ACTIVE ON MISMATCH) -->
+      <!-- ========================================================= -->
+      <div id="alarmBanner" class="alarm-banner" style="display: none;">
+        <div class="alarm-left">
+          <div class="alarm-siren">🚨</div>
+          <div class="alarm-text">
+            <h3>
+              <span>CYBERNETIC MISMATCH ALERT ALARM</span>
+              <span class="alarm-badge-tag">HEMODYNAMIC DRIFT CRITICAL</span>
+            </h3>
+            <p id="alarmMessage">Current physical heart rate (72 BPM) fails to match Predicted target (122.0 BPM). Discrepancy: -50.0 BPM.</p>
+          </div>
+        </div>
+        <div class="alarm-right">
+          <button class="btn-alarm-action" id="btnSilenceAlarm" onclick="silenceCurrentAlarm()">🔕 Silence Alarm</button>
+          <button class="btn-alarm-action" onclick="acknowledgeAlarm()">Acknowledge</button>
+        </div>
+      </div>
+
+      
+
+      <!-- ========================================================= -->
+      <!-- PROMINENT DUAL OUTPUT HERO BANNER: CURRENT VS PREDICTED   -->
+      <!-- ========================================================= -->
+      <section class="dual-output-hero card-3d bento-enter bento-delay-1" id="dualOutputHero">
+        <div class="hero-pulse-connector"><div class="hero-pulse-spark"></div></div>
+        <!-- OUTPUT 1: CURRENT (ACTUAL SENSOR) -->
+        <div class="output-panel current-panel">
+          <div class="output-badge-top red-badge">
+            <span class="pulse-indicator-dot red-dot"></span>
+            OUTPUT 1: CURRENT (ACTUAL SENSOR)
+          </div>
+          <div class="output-main-value">
+            <span class="output-num red-text" id="heroCurrentHr">72</span>
+            <span class="output-unit">BPM</span>
+          </div>
+          <div class="output-meta">
+            <span class="luxury-kicker" style="color: var(--red);">R E A L - T I M E &bull; S E N S O R</span>
+            <p class="output-name">Current Physical Heart Rate</p>
+            <p class="output-desc">MAX30102 PPG Live Telemetry</p>
+          </div>
+        </div>
+
+        <!-- 3D HOLOGRAPHIC TWIN CARDIAC VISUALIZER & VS CENTERPIECE -->
+        <div class="output-vs-divider">
+          <div class="twin-3d-wrapper" id="twin3dWrapper" title="Interactive 3D Hemodynamic Digital Twin (Drag to Rotate)">
+            <div class="cardiac-halo-ring"></div>
+            <canvas id="twin3dCanvas"></canvas>
+            <div class="twin-3d-hud-overlay">
+              <span class="twin-3d-hud-tag">3D DIGITAL TWIN</span>
+              <span class="twin-3d-hud-bpm" id="twin3dHudBpm">72 BPM</span>
+            </div>
+          </div>
+          <div class="vs-gap-tag" id="heroGapTag">Δ 0.0 BPM</div>
+          <div class="vs-gap-label homeostasis-breathe" id="heroGapLabel">HOMEOSTASIS</div>
+        </div>
+
+        <!-- OUTPUT 2: PREDICTED (DIGITAL TWIN) -->
+        <div class="output-panel predicted-panel">
+          <div class="output-badge-top cyan-badge">
+            <span class="pulse-indicator-dot cyan-dot"></span>
+            OUTPUT 2: PREDICTED (DIGITAL TWIN)
+          </div>
+          <div class="output-main-value">
+            <span class="output-num cyan-text" id="heroPredictedHr">72.0</span>
+            <span class="output-unit">BPM</span>
+          </div>
+          <div class="output-meta">
+            <span class="luxury-kicker" style="color: var(--cyan);">P R E D I C T I V E &bull; T W I N</span>
+            <p class="output-name">Predicted Heart Rate (2–3 min Lookahead)</p>
+            <p class="output-desc">2.5m Lookahead Forecast (Cap: <span id="heroCeiling">202</span> BPM)</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulation Testing Bar -->
+      <section class="sim-testing-bar card-3d bento-enter bento-delay-2">
+        <div class="sim-bar-title">
+          <span>⚙️ Simulation Tools:</span>
+        </div>
+        <div class="sim-bar-controls">
+          <button class="btn-test alert-trigger" onclick="triggerDistressMismatch()" title="Simulate Bradycardia failure to match predicted demand">
+            🚨 Test Bradycardia
+          </button>
+          <button class="btn-test alert-trigger" onclick="triggerTachycardiaMismatch()" title="Simulate Arrhythmia / Tachycardia spike">
+            ⚡ Test Tachycardia
+          </button>
+          <button class="btn-test" onclick="simulateNormalAdaptation()" title="Restore natural 2.5m physiological convergence">
+            🟢 Normal Adaptation
+          </button>
+          <div style="display: flex; align-items: center; gap: 8px; margin-left: 6px;">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Manual Pulse:</span>
+            <input type="range" id="manualCurrentSlider" min="45" max="185" value="72" style="width: 110px;" oninput="onManualHrOverride(this.value)">
+            <span id="manualHrDisplay" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 800; color: var(--red);">72 BPM</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vital Hemodynamic Metrics Bar -->
+      <section class="kpi-grid bento-enter bento-delay-3" id="kpi-row">
+        <!-- Arterial Blood Pressure -->
+        <div class="kpi-card card-3d" title="Arterial Blood Pressure (Systolic / Diastolic)">
+          <div class="kpi-header">
+            <span class="kpi-label">Blood Pressure</span>
+            <span style="color: #0284C7;">●</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" style="color: #0284C7;"><span id="bpSys">118</span>/<span id="bpDia">76</span></span>
+            <span class="kpi-unit">mmHg</span>
+          </div>
+          <span class="kpi-sub">Vascular Tension</span>
+        </div>
+
+        <!-- Cardiac Output -->
+        <div class="kpi-card card-3d" title="Estimated Cardiac Output (L/min)">
+          <div class="kpi-header">
+            <span class="kpi-label">Cardiac Output</span>
+            <span style="color: var(--green);">●</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="cardiacOutputVal" style="color: var(--green);">5.04</span>
+            <span class="kpi-unit">L/min</span>
+          </div>
+          <span class="kpi-sub">Stroke Vol (~70mL) &times; HR</span>
+        </div>
+
+        <!-- Cybernetic Gap -->
+        <div class="kpi-card card-3d" title="Deviation between Physical Sensor and Predicted Target">
+          <div class="kpi-header">
+            <span class="kpi-label">Cybernetic Gap</span>
+            <span id="gapIndicator" style="color: var(--green);">●</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpiGapVal" style="color: var(--green);">0.0</span>
+            <span class="kpi-unit">ΔBPM</span>
+          </div>
+          <span class="kpi-sub" id="kpiGapState">Homeostasis</span>
+        </div>
+
+        <!-- Blood Oxygen -->
+        <div class="kpi-card card-3d" title="Blood Oxygen Saturation (SpO2)">
+          <div class="kpi-header">
+            <span class="kpi-label">Blood Oxygen</span>
+            <span style="color: var(--green);">●</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpiSpo2Val" style="color: var(--green);">98.5</span>
+            <span class="kpi-unit">% SPO₂</span>
+          </div>
+          <span class="kpi-sub">Normoxic Saturation</span>
+        </div>
+
+        <!-- Resting Baseline -->
+        <div class="kpi-card card-3d" title="Click to view Demographics" onclick="switchNav('demographics');">
+          <div class="kpi-header">
+            <span class="kpi-label">Resting Baseline</span>
+            <span style="color: var(--text-muted);">●</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpiBaselineVal" style="color: var(--text-main);">72.0</span>
+            <span class="kpi-unit">BPM</span>
+          </div>
+          <span class="kpi-sub" id="kpiBaselineDesc">Age 18 + Normal BMI</span>
+        </div>
+
+        <!-- Max HR Ceiling -->
+        <div class="kpi-card card-3d" title="Absolute Physiological Limit (220 - Age)">
+          <div class="kpi-header">
+            <span class="kpi-label">Max HR Ceiling</span>
+            <span style="color: var(--red);">▲</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpiCeilingVal" style="color: #DC2626;">202</span>
+            <span class="kpi-unit">BPM</span>
+          </div>
+          <span class="kpi-sub">Strict (220 - Age) Cap</span>
+        </div>
+      </section>
+
+      
+
+      <!-- DEDICATED SECTION 2: DEMOGRAPHIC & BMI CALIBRATION -->
+      <section class="section-card view-section" id="sec-demographics">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="number-badge">01</span>
+            Demographic Calibration & BMI Scaling Profile
+          </div>
+          <div class="banner-chip" id="profileBadgeText" style="color: var(--cyan); border-color: var(--cyan);">
+            TEENAGER DEMOGRAPHIC THRESHOLD (13–19y)
+          </div>
+        </div>
+
+        <div class="demographics-grid">
+          <!-- Age Slider -->
+          <div class="control-block">
+            <div class="control-top">
+              <span class="control-title">Age (Biological Operational Baseline)</span>
+              <span class="control-value" id="ageDisplay">18 YEARS OLD</span>
+            </div>
+            <input type="range" id="ageSlider" min="6" max="85" value="18" oninput="onAgeChanged(this.value)">
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.65rem; color: var(--text-muted);">
+              <span>Child (6y, 80 BPM)</span>
+              <span>Teen (18y, 72 BPM)</span>
+              <span>Adult (68 BPM)</span>
+              <span>Elderly (65+y, 70 BPM)</span>
+            </div>
+          </div>
+
+          <!-- BMI Selector -->
+          <div class="control-block">
+            <div class="control-top">
+              <span class="control-title">BMI Scaling (Compounding Strain)</span>
+              <span class="control-value" id="bmiMultiplierDisplay">1.0x STRESSOR FACTOR</span>
+            </div>
+            <div class="bmi-pills">
+              <div class="btn-bmi active" id="bmiNormal" onclick="setBmi('normal')">
+                <p class="title">Normal (&lt;25)</p>
+                <p class="desc">+0 BPM | 1.0x</p>
+              </div>
+              <div class="btn-bmi" id="bmiOverweight" onclick="setBmi('overweight')">
+                <p class="title">Overweight (25-30)</p>
+                <p class="desc">+4 BPM | 1.1x</p>
+              </div>
+              <div class="btn-bmi" id="bmiObese" onclick="setBmi('obese')">
+                <p class="title">Obese (&gt;30)</p>
+                <p class="desc">+8 BPM | 1.2x</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEDICATED SECTION 3: STRESSOR INPUTS (WITH REALISTIC IMAGES) -->
+      <section class="section-card view-section bento-enter bento-delay-4" id="sec-stressors">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="number-badge">02</span>
+            Physiological Stressor Inputs (Realistic Photometric Cards)
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">
+            Inputs project predicted cardiac output after 2–3 minutes
+          </div>
+        </div>
+
+        <div class="stressors-grid">
+
+          <!-- Card 1: Physical Activity (Runner) -->
+          <div class="stressor-card card-3d">
+            <div class="stressor-banner">
+              <img src="physical_activity.jpg" alt="Physical Activity Runner" onerror="this.onerror=null; this.src='assets/physical_activity.jpg';">
+              <div class="banner-overlay"></div>
+              <div class="banner-chip" id="activityChip" style="color: var(--orange);">Resting (0 BPM)</div>
+              <div class="banner-badge-title">Physical Activity</div>
+            </div>
+            <div class="stressor-content">
+              <p class="stressor-desc">
+                Kinetic demand forecast with exponential recovery curve. Strictly capped by (220 - Age).
+              </p>
+              <div class="stressor-actions">
+                <div class="btn-action-row">
+                  <div class="btn-action active" id="btnActRest" onclick="setActivity('resting')">Rest (0)</div>
+                  <div class="btn-action" id="btnActLight" onclick="setActivity('light')">Light (+20)</div>
+                </div>
+                <div class="btn-action-row">
+                  <div class="btn-action" id="btnActMod" onclick="setActivity('moderate')">Mod (+50)</div>
+                  <div class="btn-action" id="btnActHeavy" onclick="setActivity('heavy')">Heavy (+80)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Caffeine Intake (Coffee Cup) -->
+          <div class="stressor-card card-3d">
+            <div class="stressor-banner">
+              <img src="caffeine.jpg" alt="Caffeine Coffee Cup" onerror="this.onerror=null; this.src='assets/caffeine.jpg';">
+              <div class="banner-overlay"></div>
+              <div class="banner-chip" id="caffeineChip" style="color: var(--caramel);">+10 BPM / cup</div>
+              <div class="banner-badge-title">Caffeine Intake</div>
+            </div>
+            <div class="stressor-content">
+              <p class="stressor-desc">
+                Caffeine absorption peak at 15–45 min with pharmacokinetic clearance (~4h half-life).
+              </p>
+              <div class="stressor-actions">
+                <button class="btn-action primary" style="padding: 12px 10px; font-size: 0.8rem;" onclick="logCaffeine()">
+                  ☕ Log 1 Cup (+<span id="caffBtnVal">10</span> BPM)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Meal Digestion (Plate) -->
+          <div class="stressor-card card-3d">
+            <div class="stressor-banner">
+              <img src="meal.jpg" alt="Healthy Meal Plate" onerror="this.onerror=null; this.src='assets/meal.jpg';">
+              <div class="banner-overlay"></div>
+              <div class="banner-chip" style="color: var(--cyan);">Splanchnic Shift</div>
+              <div class="banner-badge-title">Meal Digestion</div>
+            </div>
+            <div class="stressor-content">
+              <p class="stressor-desc">
+                Postprandial GI vascular perfusion demand (+4 to +14 BPM) lasting 1 to 3.5 hours.
+              </p>
+              <div class="stressor-actions">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                  <button class="btn-action" onclick="logMeal(1)">Light (+4)</button>
+                  <button class="btn-action" onclick="logMeal(2)">Med (+8)</button>
+                  <button class="btn-action" onclick="logMeal(3)">Heavy (+14)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Heat Exposure (Sun) -->
+          <div class="stressor-card card-3d">
+            <div class="stressor-banner">
+              <img src="heat_exposure.jpg" alt="Sun Heat Wave" onerror="this.onerror=null; this.src='assets/heat_exposure.jpg';">
+              <div class="banner-overlay"></div>
+              <div class="banner-chip" id="tempChip" style="color: var(--red);">24.0 °C</div>
+              <div class="banner-badge-title">Heat Exposure</div>
+            </div>
+            <div class="stressor-content">
+              <p class="stressor-desc">
+                Thermo-neutral threshold at 24°C. Above 24°C: +<span id="heatRateLabel">1.5</span> BPM/°C for peripheral cutaneous vasodilation.
+              </p>
+              <div class="stressor-actions">
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px;">
+                  <span>15°C</span>
+                  <span id="sliderTempDisplay" style="color: var(--red); font-weight: 800;">24.0°C (Threshold)</span>
+                  <span>42°C</span>
+                </div>
+                <input type="range" id="tempSlider" min="15" max="42" step="0.5" value="24" oninput="onTempChanged(this.value)">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section 5: Active Stressors Queue Inside Stressors Panel -->
+        <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-subtle);">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <div class="section-title">
+              <span class="number-badge">ACTIVE</span>
+              Active Stressors Telemetry Queue & Recovery Timers
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);" id="activeCountLabel">
+              0 ACTIVE STRESSORS IN QUEUE
+            </div>
+          </div>
+          <div class="stressor-queue" id="stressorQueueContainer">
+            <div class="empty-queue">
+              No active stressors logged. Cardiovascular system operating at homeostatic resting baseline (<span id="emptyBaselineVal">72.0</span> BPM).
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEDICATED SECTION 4: TWIN WAVEFORMS ANALYTICS -->
+      <section class="section-card view-section bento-enter bento-delay-5" id="sec-analytics">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="number-badge">03</span>
+            Hemodynamic Drift Waveform (Current Output vs Predicted Output)
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: var(--red); box-shadow: 0 0 6px var(--red);"></div>
+              <span style="font-weight: 800; color: var(--red);">CURRENT (Physical HR)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></div>
+              <span style="font-weight: 800; color: var(--cyan);">PREDICTED (2-3m Lookahead)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #F87171; border-radius: 0; height: 2px; width: 12px;"></div>
+              <span>Ceiling (220-Age)</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" style="height: 320px;">
+          <canvas id="waveformCanvas"></canvas>
+        </div>
+      </section>
+
+      <!-- DEDICATED SECTION 5: THERMODYNAMICS & METABOLIC COUPLING -->
+      <section class="section-card view-section" id="sec-thermo">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="number-badge">04</span>
+            Thermodynamic Energy Coupling & Metabolic Telemetry
+          </div>
+          <div style="font-size: 0.7rem; color: var(--green); font-weight: 700;">
+            O₂ Ventilation & Heat Production
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+          <div class="metabolic-card">
+            <div class="metabolic-label">
+              <p class="title">Cellular O₂ Consumption (VO₂)</p>
+              <p class="desc">Standardized METs coupling to body mass</p>
+            </div>
+            <div class="metabolic-readout">
+              <span class="val" id="vo2Val">245</span>
+              <span class="unit">mL/min</span>
+            </div>
+          </div>
+
+          <div class="metabolic-card">
+            <div class="metabolic-label">
+              <p class="title">Metabolic Heat Generation</p>
+              <p class="desc">Caloric combustion (4.83 kcal / L O₂)</p>
+            </div>
+            <div class="metabolic-readout">
+              <span class="val" id="heatVal">71.0</span>
+              <span class="unit">kcal/hr</span>
+            </div>
+          </div>
+
+          <div class="metabolic-card">
+            <div class="metabolic-label">
+              <p class="title">Splanchnic Blood Allocation</p>
+              <p class="desc">Postprandial GI vascular perfusion</p>
+            </div>
+            <div class="metabolic-readout">
+              <span class="val" id="splanchnicVal">22.0%</span>
+              <span class="unit">cardiac output</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </main>
+
+  <script>
+    // --- Model State ---
+    
+    // =========================================================
+    // DILRAKSH DYNAMIC VISUAL MOTION & PARTICLE POPPERS
+    // =========================================================
+
+    // Floating Stressor Bubble Popper
+    function showFloatingBubble(sourceElement, text, bgColor = '#FF5E1E', textColor = '#FFFFFF') {
+      const rect = sourceElement.getBoundingClientRect();
+      const badge = document.createElement('div');
+      badge.className = 'floating-feedback-badge';
+      badge.innerText = text;
+      badge.style.backgroundColor = bgColor;
+      badge.style.color = textColor;
+      badge.style.left = `${rect.left + rect.width / 2}px`;
+      badge.style.top = `${rect.top + window.scrollY}px`;
+      document.body.appendChild(badge);
+
+      setTimeout(() => {
+        badge.remove();
+      }, 1150);
+    }
+
+    // Number Roll Interpolator for Smooth Digit Transitions
+    function smoothNumberRoll(elementId, targetValue, decimals = 0, suffix = '') {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const current = parseFloat(el.innerText) || targetValue;
+      if (Math.abs(current - targetValue) < 0.05) {
+        el.innerText = targetValue.toFixed(decimals) + suffix;
+        return;
+      }
+
+      const diff = targetValue - current;
+      const step = diff * 0.22;
+      const nextVal = current + step;
+      el.innerText = nextVal.toFixed(decimals) + suffix;
+
+      requestAnimationFrame(() => {
+        smoothNumberRoll(elementId, targetValue, decimals, suffix);
+      });
+    }
+
+    // Rhythmic Systolic Heartbeat Pulse Trigger
+    function triggerSystolicNumberPulse() {
+      const curEl = document.getElementById('heroCurrentHr');
+      const predEl = document.getElementById('heroPredictedHr');
+      if (curEl) {
+        curEl.classList.remove('systolic-kick');
+        void curEl.offsetWidth; // re-flow
+        curEl.classList.add('systolic-kick');
+      }
+      if (predEl) {
+        predEl.classList.remove('systolic-kick');
+        void predEl.offsetWidth;
+        predEl.classList.add('systolic-kick');
+      }
+    }
+
+    let userAge = 18;
+    let bmiCategory = 'normal'; // 'normal', 'overweight', 'obese'
+    let currentTemp = 24.0;
+    let currentActivity = 'resting'; // 'resting', 'light', 'moderate', 'heavy'
+    let currentNav = 'all';
+
+    // Current Physical Heart Rate (separate from predicted!)
+    let actualHr = 72.0;
+    let isManualOverride = false;
+    let adaptiveTracking = true;
+
+    // Active stressor events
+    let meals = [];      // { id, size, timestamp }
+    let caffeine = [];   // { id, cups, timestamp }
+    let kineticLogs = [];// { id, intensity, peakBpm, timestamp }
+
+    // Waveform history buffer (60 seconds)
+    const historyLength = 60;
+    let actualHistory = new Array(historyLength).fill(72.0);
+    let twinHistory = new Array(historyLength).fill(72.0);
+
+    // --- Audio Alarm Engine (Web Audio API) ---
+    let audioCtx = null;
+    let soundEnabled = true;
+    let alarmSilenced = false;
+    let alarmInterval = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Trigger audio context on any user interaction
+    document.addEventListener('click', initAudio, { once: true });
+
+    function playBeep(freq, durationMs) {
+      if (!soundEnabled || alarmSilenced || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + durationMs / 1000);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + durationMs / 1000);
+      } catch (e) {
+        // audio policy or muted
+      }
+    }
+
+    function playMedicalAlarmChime() {
+      if (!soundEnabled || alarmSilenced) return;
+      initAudio();
+      playBeep(880, 150); // A5
+      setTimeout(() => playBeep(660, 200), 180); // E5
+      setTimeout(() => playBeep(880, 150), 400); // A5
+    }
+
+    function toggleAudioAlarm() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('btnSoundToggle');
+      const icon = document.getElementById('soundIcon');
+      const label = document.getElementById('soundLabel');
+      if (soundEnabled) {
+        btn.classList.add('active');
+        icon.innerText = '🔔';
+        label.innerText = 'Audio Alarm: ON';
+        initAudio();
+      } else {
+        btn.classList.remove('active');
+        icon.innerText = '🔕';
+        label.innerText = 'Audio Alarm: MUTED';
+      }
+    }
+
+    function silenceCurrentAlarm() {
+      alarmSilenced = true;
+      document.getElementById('btnSilenceAlarm').innerText = '✓ Silenced';
+      setTimeout(() => {
+        document.getElementById('btnSilenceAlarm').innerText = '🔕 Silence Alarm';
+      }, 30000); // Resets after 30 seconds if still drifting
+    }
+
+    function acknowledgeAlarm() {
+      alarmSilenced = true;
+      document.getElementById('alarmBanner').style.display = 'none';
+    }
+
+    // --- Navigation & Section Switching ---
+
+    function switchNav(targetId) {
+      currentNav = targetId;
+
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const activeNavEl = document.getElementById('nav-' + targetId);
+      if (activeNavEl) activeNavEl.classList.add('active');
+
+      document.querySelectorAll('.tab-pill').forEach(el => el.classList.remove('active'));
+      const activePillEl = document.getElementById('tab-pill-' + targetId);
+      if (activePillEl) activePillEl.classList.add('active');
+
+      const titleEl = document.getElementById('pageHeadingTitle');
+      const subEl = document.getElementById('pageHeadingSubtitle');
+      const allSections = document.querySelectorAll('.view-section');
+
+      if (targetId === 'all') {
+        titleEl.innerText = 'Dilraksh Hemodynamic Digital Twin';
+        subEl.innerText = 'Cybernetic Physiological Modeling, Demographic Scaling & Real-Time Metabolic Prediction';
+        allSections.forEach(sec => {
+          sec.style.display = 'block';
+          sec.classList.remove('highlight');
+        });
+      } else {
+        const nameMap = {
+          'stressors': 'Physiological Stressor Inputs & Kinetic Load',
+          'analytics': 'Dual-Line Hemodynamic Drift Waveforms',
+          'demographics': 'Demographic Calibration & BMI Scaling Profile',
+          'thermo': 'Thermodynamic Energy Coupling & Metabolic Estimates'
+        };
+        titleEl.innerText = nameMap[targetId] || 'Hemodynamic Digital Twin';
+        subEl.innerText = 'Focused section view with active calibration controls and cybernetic telemetry';
+
+        allSections.forEach(sec => {
+          if (sec.id === 'sec-' + targetId) {
+            sec.style.display = 'block';
+            sec.classList.add('highlight');
+            sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            sec.style.display = 'block';
+            sec.classList.remove('highlight');
+          }
+        });
+      }
+
+      setTimeout(() => {
+        drawWaveform(getMaxCeiling(userAge));
+      }, 50);
+    }
+
+    // --- Mathematical Engine Calibrations ---
+
+    function getAgeBaseline(age) {
+      if (age < 13) return 80.0;
+      if (age <= 19) return 72.0; // Default 18
+      if (age <= 64) return 68.0;
+      return 70.0; // Older adult (65+)
+    }
+
+    function getBmiOffset(bmi) {
+      if (bmi === 'overweight') return 4.0;
+      if (bmi === 'obese') return 8.0;
+      return 0.0;
+    }
+
+    function getBmiSensitivity(bmi) {
+      if (bmi === 'overweight') return 1.1;
+      if (bmi === 'obese') return 1.2;
+      return 1.0;
+    }
+
+    function getCaffeineSpikeAmplitude(age) {
+      if (age < 13) return 15.0;
+      if (age <= 19) return 10.0;
+      if (age <= 64) return 8.0;
+      return 6.0;
+    }
+
+    function getHeatMultiplier(age) {
+      if (age < 13 || age >= 65) return 2.0;
+      return 1.5;
+    }
+
+    function getCaffeineDecayK(age) {
+      if (age >= 65) return 0.0018; // 6-8 hours
+      if (age <= 19) return 0.0035; // slightly faster for teens
+      if (age < 13) return 0.0040;
+      return 0.0030; // average adult
+    }
+
+    function getWeightKg(bmi) {
+      if (bmi === 'overweight') return 82.0;
+      if (bmi === 'obese') return 98.0;
+      return 70.0;
+    }
+
+    function getMaxCeiling(age) {
+      return 220 - age;
+    }
+
+    // --- PREDICTED TWIN BPM CALCULATION (WITH 2–3 MIN LOOKAHEAD FORECAST) ---
+    function computePredictedBpm(currentTime = new Date(), lookaheadMinutes = 2.5) {
+      const baseHr = getAgeBaseline(userAge) + getBmiOffset(bmiCategory);
+      const bmiFactor = getBmiSensitivity(bmiCategory);
+      let predicted = baseHr;
+
+      // 1. Heat Exposure (> 24.0°C)
+      if (currentTemp > 24.0) {
+        const deltaT = currentTemp - 24.0;
+        predicted += deltaT * getHeatMultiplier(userAge) * bmiFactor;
+      }
+
+      // 2. Meal Digestion (Splanchnic Load Forecast)
+      meals.forEach(m => {
+        // dtMinutes projected into the 2-3 minute lookahead window
+        const dtMinutes = ((currentTime - m.timestamp) / (1000 * 60)) + lookaheadMinutes;
+        let peakMin = m.size === 1 ? 30.0 : (m.size === 2 ? 45.0 : 60.0);
+        let durationMin = m.size === 1 ? 60.0 : (m.size === 2 ? 120.0 : 210.0);
+        let rawPeak = m.size === 1 ? 4.0 : (m.size === 2 ? 8.0 : 14.0);
+
+        if (userAge >= 65) {
+          if (rawPeak > 10.0) rawPeak = 10.0;
+          durationMin *= 1.4;
+        }
+
+        if (dtMinutes >= 0 && dtMinutes <= durationMin) {
+          let curve = 0;
+          if (dtMinutes <= peakMin) {
+            curve = Math.sin((dtMinutes / peakMin) * (Math.PI / 2));
+          } else {
+            curve = Math.cos(((dtMinutes - peakMin) / (durationMin - peakMin)) * (Math.PI / 2));
+          }
+          if (curve > 0) {
+            predicted += rawPeak * curve * bmiFactor;
+          }
+        }
+      });
+
+      // 3. Caffeine Pharmacokinetics Forecast
+      caffeine.forEach(c => {
+        const dtMinutes = ((currentTime - c.timestamp) / (1000 * 60)) + lookaheadMinutes;
+        let maxWindow = userAge >= 65 ? 480 : 360;
+        if (dtMinutes >= 0 && dtMinutes <= maxWindow) {
+          let absorb = dtMinutes < 30.0 ? (dtMinutes / 30.0) : 1.0;
+          let decay = Math.exp(-getCaffeineDecayK(userAge) * Math.max(0, dtMinutes - 30.0));
+          let amp = getCaffeineSpikeAmplitude(userAge) * c.cups * bmiFactor;
+          predicted += amp * absorb * decay;
+        }
+      });
+
+      // 4. Kinetic Load (Physical Activity Forecast)
+      kineticLogs.forEach(k => {
+        const dtMinutes = ((currentTime - k.timestamp) / (1000 * 60));
+        // In the 2-3 min window post-start, physical activity reaches full acute kinetic load!
+        if (dtMinutes >= 0 && dtMinutes <= 10.0) {
+          let decay = Math.exp(-3.0 * (dtMinutes / 10.0));
+          predicted += k.peakBpm * bmiFactor * decay;
+        }
+      });
+
+      // 5. Absolute Ceiling Clamping: HR_max = 220 - Age
+      const ceiling = getMaxCeiling(userAge);
+      if (predicted > ceiling) {
+        predicted = ceiling;
+      }
+
+      return predicted;
+    }
+
+    // --- Interactive Simulation Helpers (Mismatch Testing) ---
+
+    function onManualHrOverride(val) {
+      isManualOverride = true;
+      adaptiveTracking = false;
+      actualHr = parseFloat(val);
+      document.getElementById('manualHrDisplay').innerText = `${Math.round(actualHr)} BPM`;
+      alarmSilenced = false; // re-arm alarm
+      updateUi();
+    }
+
+    function triggerDistressMismatch() {
+      const btn = event?.currentTarget || document.body;
+      showFloatingBubble(btn, '🚨 Bradycardia Mismatch Triggered!', '#DC2626', '#FFFFFF');
+      // Simulate Autonomic Failure / Inability of physical body to match predicted demand
+      isManualOverride = true;
+      adaptiveTracking = false;
+      actualHr = 58.0; // Resting/bradycardia while predicted is elevated
+      document.getElementById('manualCurrentSlider').value = 58;
+      document.getElementById('manualHrDisplay').innerText = '58 BPM';
+      alarmSilenced = false;
+      // Also log heavy activity if none exists to create huge gap
+      if (kineticLogs.length === 0) {
+        setActivity('heavy');
+      }
+      updateUi();
+    }
+
+    function triggerTachycardiaMismatch() {
+      const btn = event?.currentTarget || document.body;
+      showFloatingBubble(btn, '⚡ Tachycardia Spike Triggered!', '#DC2626', '#FFFFFF');
+      // Simulate unpredicted arrhythmia or panic spike (e.g. 155 BPM)
+      isManualOverride = true;
+      adaptiveTracking = false;
+      actualHr = 155.0;
+      document.getElementById('manualCurrentSlider').value = 155;
+      document.getElementById('manualHrDisplay').innerText = '155 BPM';
+      alarmSilenced = false;
+      updateUi();
+    }
+
+    function simulateNormalAdaptation() {
+      const btn = event?.currentTarget || document.body;
+      showFloatingBubble(btn, '🟢 Restoring Adaptive Tracking', '#059669', '#FFFFFF');
+      isManualOverride = false;
+      adaptiveTracking = true;
+      alarmSilenced = false;
+      updateUi();
+    }
+
+    // --- User Actions ---
+
+    function onAgeChanged(val) {
+      userAge = parseInt(val);
+      document.getElementById('ageDisplay').innerText = `${userAge} YEARS OLD`;
+      document.getElementById('avatarAge').innerText = userAge;
+
+      let tier = userAge < 13 ? 'Child' : (userAge <= 19 ? 'Teenager' : (userAge <= 64 ? 'Adult' : 'Older Adult'));
+      document.getElementById('sidebarProfileName').innerText = `${tier} (${userAge}y)`;
+
+      let badge = userAge < 13 ? 'CHILD DEMOGRAPHIC THRESHOLD (<13y)' :
+                  (userAge <= 19 ? 'TEENAGER DEMOGRAPHIC THRESHOLD (13–19y)' :
+                  (userAge <= 64 ? 'ADULT DEMOGRAPHIC THRESHOLD (20–64y)' : 'OLDER ADULT THRESHOLD (65+y)'));
+      document.getElementById('profileBadgeText').innerText = badge;
+
+      let caffSpike = getCaffeineSpikeAmplitude(userAge);
+      document.getElementById('caffeineChip').innerText = `+${caffSpike} BPM / cup`;
+      document.getElementById('caffBtnVal').innerText = caffSpike;
+      document.getElementById('heatRateLabel').innerText = getHeatMultiplier(userAge);
+
+      const ceiling = getMaxCeiling(userAge);
+      document.getElementById('heroCeiling').innerText = ceiling;
+
+      updateUi();
+    }
+
+    function setBmi(category) {
+      bmiCategory = category;
+      document.querySelectorAll('.btn-bmi').forEach(el => el.classList.remove('active'));
+      if (category === 'normal') document.getElementById('bmiNormal').classList.add('active');
+      if (category === 'overweight') document.getElementById('bmiOverweight').classList.add('active');
+      if (category === 'obese') document.getElementById('bmiObese').classList.add('active');
+
+      const factor = getBmiSensitivity(bmiCategory);
+      document.getElementById('bmiMultiplierDisplay').innerText = `${factor.toFixed(1)}x STRESSOR FACTOR`;
+      document.getElementById('sidebarBmiStatus').innerText = `${category.toUpperCase()} BMI (${factor.toFixed(1)}x)`;
+
+      updateUi();
+    }
+
+    function onTempChanged(val) {
+      currentTemp = parseFloat(val);
+      document.getElementById('tempChip').innerText = `${currentTemp.toFixed(1)} °C`;
+      document.getElementById('sliderTempDisplay').innerText = `${currentTemp.toFixed(1)}°C ${currentTemp > 24 ? '(Thermal Load Active)' : '(Threshold 24°C)'}`;
+      updateUi();
+    }
+
+    function setActivity(intensity) {
+      initAudio();
+      currentActivity = intensity;
+      document.querySelectorAll('#btnActRest, #btnActLight, #btnActMod, #btnActHeavy').forEach(el => el.classList.remove('active'));
+
+      let peak = 0;
+      let label = 'Resting (0 BPM)';
+      if (intensity === 'resting') {
+        document.getElementById('btnActRest').classList.add('active');
+      } else if (intensity === 'light') {
+        document.getElementById('btnActLight').classList.add('active');
+        peak = 20;
+        label = 'Light (+20 BPM)';
+      } else if (intensity === 'moderate') {
+        document.getElementById('btnActMod').classList.add('active');
+        peak = 50;
+        label = 'Moderate (+50 BPM)';
+      } else if (intensity === 'heavy') {
+        document.getElementById('btnActHeavy').classList.add('active');
+        peak = 80;
+        label = 'Heavy (+80 BPM)';
+      }
+
+      document.getElementById('activityChip').innerText = label;
+
+      if (peak > 0) {
+        kineticLogs.unshift({
+          id: 'k_' + Date.now(),
+          intensity: intensity,
+          peakBpm: peak,
+          timestamp: new Date()
+        });
+      }
+      alarmSilenced = false;
+      updateUi();
+    }
+
+    function logCaffeine() {
+      const btn = event?.currentTarget || document.body;
+      showFloatingBubble(btn, '☕ +10 BPM Ingested', '#FF5E1E', '#FFFFFF');
+      triggerSystolicNumberPulse();
+      initAudio();
+      caffeine.unshift({
+        id: 'c_' + Date.now(),
+        cups: 1,
+        timestamp: new Date()
+      });
+      alarmSilenced = false;
+      updateUi();
+    }
+
+    function logMeal(size) {
+      const btn = event?.currentTarget || document.body;
+      const label = size === 1 ? '🍽️ +4 BPM (Light)' : (size === 2 ? '🍽️ +8 BPM (Medium)' : '🍽️ +14 BPM (Heavy)');
+      showFloatingBubble(btn, label, '#FF5E1E', '#FFFFFF');
+      triggerSystolicNumberPulse();
+      initAudio();
+      meals.unshift({
+        id: 'm_' + Date.now(),
+        size: size,
+        timestamp: new Date()
+      });
+      alarmSilenced = false;
+      updateUi();
+    }
+
+    function removeStressor(id) {
+      meals = meals.filter(m => m.id !== id);
+      caffeine = caffeine.filter(c => c.id !== id);
+      kineticLogs = kineticLogs.filter(k => k.id !== id);
+      if (kineticLogs.length === 0) {
+        setActivity('resting');
+      }
+      alarmSilenced = false;
+      updateUi();
+    }
+
+    function resetAll() {
+      meals = [];
+      caffeine = [];
+      kineticLogs = [];
+      currentActivity = 'resting';
+      currentTemp = 24.0;
+      userAge = 18;
+      bmiCategory = 'normal';
+      actualHr = 72.0;
+      isManualOverride = false;
+      adaptiveTracking = true;
+      alarmSilenced = false;
+
+      document.getElementById('ageSlider').value = 18;
+      document.getElementById('tempSlider').value = 24;
+      document.getElementById('manualCurrentSlider').value = 72;
+      document.getElementById('manualHrDisplay').innerText = '72 BPM';
+      document.getElementById('alarmBanner').style.display = 'none';
+
+      onAgeChanged(18);
+      setBmi('normal');
+      onTempChanged(24);
+      setActivity('resting');
+      updateUi();
+    }
+
+    // --- UDP Mock Console ---
+
+    function injectMockPacket() {
+      initAudio();
+      const bpm = (70 + Math.random() * 8).toFixed(1);
+      const spo2 = (97.5 + Math.random() * 2.0).toFixed(1);
+      const nowStr = new Date().toLocaleTimeString();
+      const consoleEl = document.getElementById('udpConsole');
+      const line = document.createElement('div');
+      line.innerText = `[${nowStr}] UDP Broadcast received: "${bpm},${spo2}" (CRC32: OK)`;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+
+      actualHr = parseFloat(bpm);
+      isManualOverride = true;
+      adaptiveTracking = false;
+      document.getElementById('manualCurrentSlider').value = Math.round(actualHr);
+      document.getElementById('manualHrDisplay').innerText = `${Math.round(actualHr)} BPM`;
+      updateUi();
+    }
+
+    function clearUdpLogs() {
+      document.getElementById('udpConsole').innerHTML = '<div>[UDP:4210] Console cleared. Listening for broadcast packets...</div>';
+    }
+
+    // --- UI & TELEMETRY UPDATES (WITH ALERT ALARM LOGIC) ---
+
+    function updateUi() {
+      const now = new Date();
+      // Lookahead predicted target (2.5 minutes ahead)
+      const predicted = computePredictedBpm(now, 2.5);
+      window.lastPredictedBpm = predicted;
+      const baseHr = getAgeBaseline(userAge) + getBmiOffset(bmiCategory);
+      const ceiling = getMaxCeiling(userAge);
+
+      // Current Physical Heart Rate Dynamics:
+      // If adaptiveTracking is ON, physical rate moves with realistic physiological inertia
+      // towards the demand, taking ~2-3 minutes to catch up to the lookahead predicted target!
+      if (!isManualOverride && adaptiveTracking) {
+        // Natural biological lag: ~4% progress per second towards predicted target
+        const inertiaRate = 0.04;
+        actualHr += (predicted - actualHr) * inertiaRate;
+        // Minor natural sensor noise (+- 0.5 BPM)
+        actualHr += (Math.random() - 0.5) * 0.4;
+        actualHr = Math.min(ceiling, Math.max(45, actualHr));
+        document.getElementById('manualCurrentSlider').value = Math.round(actualHr);
+        document.getElementById('manualHrDisplay').innerText = `${Math.round(actualHr)} BPM`;
+      }
+
+      const currentVal = Math.round(actualHr);
+      const gap = actualHr - predicted;
+      const absGap = Math.abs(gap);
+      const gapStr = (gap >= 0 ? '+' : '') + gap.toFixed(1);
+
+      // Push to history
+      actualHistory.shift();
+      actualHistory.push(actualHr);
+      twinHistory.shift();
+      twinHistory.push(predicted);
+
+      // Hero Elements (PROMINENT CURRENT VS PREDICTED)
+      document.getElementById('heroCurrentHr').innerText = currentVal;
+      document.getElementById('heroPredictedHr').innerText = predicted.toFixed(1);
+      document.getElementById('heroCeiling').innerText = ceiling;
+      document.getElementById('heroGapTag').innerText = `Δ ${gapStr} BPM`;
+
+      // KPI Elements
+      if (document.getElementById('kpiPhysicalHr')) document.getElementById('kpiPhysicalHr').innerText = currentVal;
+      if (document.getElementById('bioGaugeHr')) document.getElementById('bioGaugeHr').innerText = currentVal;
+      if (document.getElementById('kpiTwinHr')) document.getElementById('kpiTwinHr').innerText = predicted.toFixed(1);;
+      document.getElementById('kpiGapVal').innerText = gapStr;
+      if (document.getElementById('allostaticLoadVal')) document.getElementById('allostaticLoadVal').innerText = gapStr;
+
+      // =========================================================
+      // ALERT ALARM & CYBERNETIC DEVIATION CHECK
+      // =========================================================
+      const alarmBanner = document.getElementById('alarmBanner');
+      const heroBanner = document.getElementById('dualOutputHero');
+      const heroGapLabel = document.getElementById('heroGapLabel');
+      const gapStateEl = document.getElementById('kpiGapState');
+      const gapDot = document.getElementById('gapIndicator');
+      const kpiGapValEl = document.getElementById('kpiGapVal');
+      const heroGapTagEl = document.getElementById('heroGapTag');
+
+      // Alert threshold: discrepancy >= 12.0 BPM triggers critical alarm
+      const ALARM_THRESHOLD = 12.0;
+
+      if (absGap < 5.0) {
+        // HOMEOSTASIS
+        gapStateEl.innerText = 'Homeostasis';
+        heroGapLabel.innerText = 'HOMEOSTASIS';
+        kpiGapValEl.style.color = 'var(--green)';
+        heroGapLabel.style.color = 'var(--green)';
+        heroGapTagEl.style.color = 'var(--green)';
+        gapDot.style.color = 'var(--green)';
+
+        alarmBanner.style.display = 'none';
+        heroBanner.classList.remove('alarm-active');
+      } else if (absGap < ALARM_THRESHOLD) {
+        // MILD ADAPTIVE DRIFT
+        gapStateEl.innerText = 'Adaptive Drift';
+        heroGapLabel.innerText = 'ADAPTIVE LAG';
+        kpiGapValEl.style.color = 'var(--orange)';
+        heroGapLabel.style.color = 'var(--orange)';
+        heroGapTagEl.style.color = 'var(--orange)';
+        gapDot.style.color = 'var(--orange)';
+
+        alarmBanner.style.display = 'none';
+        heroBanner.classList.remove('alarm-active');
+      } else {
+        // 🚨 CRITICAL MISMATCH: ALERT ALARM ACTIVE!
+        gapStateEl.innerText = 'MISMATCH ALARM';
+        heroGapLabel.innerText = 'CRITICAL DRIFT';
+        kpiGapValEl.style.color = 'var(--red)';
+        heroGapLabel.style.color = 'var(--red)';
+        heroGapTagEl.style.color = 'var(--red)';
+        gapDot.style.color = 'var(--red)';
+
+        // Show Visual Alarm Banner & Flash Card
+        alarmBanner.style.display = 'flex';
+        heroBanner.classList.add('alarm-active');
+
+        const mismatchType = gap < 0 
+          ? `Autonomic / Cardiac Incompetence (Under-Responding by ${gapStr} BPM)`
+          : `Unexplained Tachycardia / Arrhythmic Drift (Over-Responding by ${gapStr} BPM)`;
+
+        document.getElementById('alarmMessage').innerHTML = 
+          `<strong>Physical Pulse (${currentVal} BPM)</strong> does NOT match <strong>Predicted Target (${predicted.toFixed(1)} BPM)</strong> after 2–3 min lookahead horizon! ` +
+          `Discrepancy: <span style="color:#FFF; font-weight:800;">${gapStr} BPM</span>. Clinical assessment: <em>${mismatchType}</em>.`;
+
+        // Play audible alarm tone
+        playMedicalAlarmChime();
+      }
+
+      document.getElementById('kpiBaselineVal').innerText = baseHr.toFixed(1);
+      document.getElementById('emptyBaselineVal').innerText = baseHr.toFixed(1);
+      document.getElementById('kpiBaselineDesc').innerText = `Age ${userAge}y + ${bmiCategory.toUpperCase()} (+${getBmiOffset(bmiCategory)} BPM)`;
+      document.getElementById('kpiCeilingVal').innerText = ceiling;
+
+      // Blood Pressure Dynamic Estimate
+      const sysBp = Math.round(110 + (actualHr - 60) * 0.4);
+      const diaBp = Math.round(72 + (actualHr - 60) * 0.15);
+      document.getElementById('bpSys').innerText = sysBp;
+      document.getElementById('bpDia').innerText = diaBp;
+
+      // Cardiac Output Estimate
+      const strokeVolumeMl = 70.0;
+      const cardiacOutputL = ((actualHr * strokeVolumeMl) / 1000.0).toFixed(2);
+      document.getElementById('cardiacOutputVal').innerText = cardiacOutputL;
+
+      // Metabolic Telemetry
+      const weight = getWeightKg(bmiCategory);
+      const mets = predicted / baseHr;
+      const vo2 = 3.5 * weight * mets;
+      const heat = (vo2 / 1000.0) * 60.0 * 4.83;
+
+      let splanchnic = 22.0;
+      meals.forEach(m => {
+        splanchnic += (m.size === 1 ? 4 : (m.size === 2 ? 8 : 14)) * 0.8;
+      });
+      splanchnic = Math.min(45.0, splanchnic);
+
+      document.getElementById('vo2Val').innerText = vo2.toFixed(0);
+      document.getElementById('heatVal').innerText = heat.toFixed(1);
+      document.getElementById('splanchnicVal').innerText = splanchnic.toFixed(1) + '%';
+
+      // Active Queue Rendering
+      renderActiveQueue(now);
+
+      // Redraw Canvas
+      drawWaveform(ceiling);
+    }
+
+    function renderActiveQueue(now) {
+      const container = document.getElementById('stressorQueueContainer');
+      const allActive = [];
+
+      // Meals
+      meals.forEach(m => {
+        const dt = (now - m.timestamp) / (1000 * 60);
+        let dur = m.size === 1 ? 60 : (m.size === 2 ? 120 : 210);
+        if (userAge >= 65) dur *= 1.4;
+        if (dt < dur) {
+          allActive.push({
+            id: m.id,
+            icon: '🍽️',
+            title: `${m.size === 1 ? 'Light' : (m.size === 2 ? 'Medium' : 'Heavy')} Meal`,
+            timeAgo: `${dt.toFixed(0)}m ago`,
+            rem: `${Math.max(0, dur - dt).toFixed(0)}m left`,
+            delta: m.size === 1 ? '+4.0' : (m.size === 2 ? '+8.0' : '+14.0')
+          });
+        }
+      });
+
+      // Caffeine
+      caffeine.forEach(c => {
+        const dt = (now - c.timestamp) / (1000 * 60);
+        const win = userAge >= 65 ? 480 : 360;
+        if (dt < win) {
+          allActive.push({
+            id: c.id,
+            icon: '☕',
+            title: `${c.cups} Cup(s) Caffeine`,
+            timeAgo: `${dt.toFixed(0)}m ago`,
+            rem: `${Math.max(0, win - dt).toFixed(0)}m left`,
+            delta: `+${(getCaffeineSpikeAmplitude(userAge) * getBmiSensitivity(bmiCategory)).toFixed(1)}`
+          });
+        }
+      });
+
+      // Kinetic Logs
+      kineticLogs.forEach(k => {
+        const dt = (now - k.timestamp) / (1000 * 60);
+        if (dt < 10.0) {
+          allActive.push({
+            id: k.id,
+            icon: '🏃',
+            title: `${k.intensity.toUpperCase()} Activity`,
+            timeAgo: `${dt.toFixed(0)}m ago`,
+            rem: `${Math.max(0, 10.0 - dt).toFixed(0)}m left`,
+            delta: `+${(k.peakBpm * getBmiSensitivity(bmiCategory)).toFixed(1)}`
+          });
+        }
+      });
+
+      document.getElementById('activeCountLabel').innerText = `${allActive.length} ACTIVE STRESSOR(S) IN QUEUE`;
+
+      if (allActive.length === 0) {
+        container.innerHTML = `
+          <div class="empty-queue">
+            No active stressors logged. Cardiovascular system operating at homeostatic resting baseline (<span id="emptyBaselineVal">${(getAgeBaseline(userAge) + getBmiOffset(bmiCategory)).toFixed(1)}</span> BPM).
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = allActive.map(item => `
+        <div class="queue-item">
+          <div class="queue-left">
+            <div class="queue-icon">${item.icon}</div>
+            <div class="queue-info">
+              <p class="name">${item.title}</p>
+              <p class="time">Logged ${item.timeAgo} • ${item.rem}</p>
+            </div>
+          </div>
+          <div class="queue-right">
+            <span class="queue-delta">${item.delta} BPM</span>
+            <button class="btn-delete" title="Cancel Stressor" onclick="removeStressor('${item.id}')">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // --- High-Performance Smooth Canvas Waveform ---
+    let waveformScanOffset = 0;
+
+    function drawWaveform(ceiling) {
+      const canvas = document.getElementById('waveformCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.parentElement.clientWidth;
+      const h = canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // 60FPS Ambient Telemetry Radar Scanner Line
+      waveformScanOffset = (waveformScanOffset + 1.8) % (w - 35);
+      const scannerX = 35 + waveformScanOffset;
+      const scanGrad = ctx.createLinearGradient(scannerX - 35, 0, scannerX + 35, 0);
+      scanGrad.addColorStop(0, 'rgba(255, 94, 30, 0.0)');
+      scanGrad.addColorStop(0.5, 'rgba(255, 94, 30, 0.08)');
+      scanGrad.addColorStop(1, 'rgba(255, 94, 30, 0.0)');
+      ctx.fillStyle = scanGrad;
+      ctx.fillRect(scannerX - 35, 0, 70, h);
+
+      const minY = 40;
+      const maxY = 210;
+      function getY(bpm) {
+        return h - ((bpm - minY) / (maxY - minY)) * (h - 20) - 10;
+      }
+
+      // Draw Gridlines (Clean Crisp CampusHub Style)
+      ctx.strokeStyle = '#F3F4F6';
+      ctx.lineWidth = 1;
+      [60, 90, 120, 150, 180, 200].forEach(bpm => {
+        const y = getY(bpm);
+        ctx.beginPath();
+        ctx.moveTo(35, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#9CA3AF';
+        ctx.font = '10px JetBrains Mono';
+        ctx.fillText(bpm, 6, y + 3);
+      });
+
+      // Ceiling Line (220 - Age)
+      const ceilingY = getY(ceiling);
+      ctx.strokeStyle = 'rgba(220, 38, 38, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(35, ceilingY);
+      ctx.lineTo(w, ceilingY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#DC2626';
+      ctx.font = '9px JetBrains Mono';
+      ctx.fillText(`CAP: ${ceiling} BPM`, w - 80, ceilingY - 5);
+
+      // Draw Series Line Helper
+      function drawSeries(data, strokeColor, fillColor) {
+        ctx.beginPath();
+        const step = (w - 40) / (historyLength - 1);
+        for (let i = 0; i < historyLength; i++) {
+          const x = 35 + i * step;
+          const y = getY(data[i]);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+
+        ctx.lineTo(w, h);
+        ctx.lineTo(35, h);
+        ctx.closePath();
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+
+      // Draw Physical (Crimson/Red) & Predicted (Sunset Orange with Peach Glow Area)
+      const orangeGrad = ctx.createLinearGradient(0, getY(180), 0, h);
+      orangeGrad.addColorStop(0, 'rgba(255, 94, 30, 0.16)');
+      orangeGrad.addColorStop(1, 'rgba(255, 94, 30, 0.0)');
+
+      drawSeries(actualHistory, '#EF4444', 'rgba(239, 68, 68, 0.04)');
+      drawSeries(twinHistory, '#FF5E1E', orangeGrad);
+
+      // Draw Glow Cursor at current head
+      const headX = w;
+      const actualY = getY(actualHistory[actualHistory.length - 1]);
+      const twinY = getY(twinHistory[twinHistory.length - 1]);
+
+      ctx.beginPath();
+      ctx.arc(headX - 2, actualY, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#EF4444';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(headX - 2, twinY, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#FF5E1E';
+      ctx.fill();
+    }
+
+    // =========================================================
+    // 3D CARD PERSPECTIVE & SPECULAR TILT ENGINE
+    // =========================================================
+    function init3dCards() {
+      const cards = document.querySelectorAll('.card-3d');
+      cards.forEach(card => {
+        let glare = card.querySelector('.card-glare');
+        if (!glare) {
+          glare = document.createElement('div');
+          glare.className = 'card-glare';
+          card.appendChild(glare);
+        }
+
+        card.addEventListener('mousemove', e => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const cx = rect.width / 2;
+          const cy = rect.height / 2;
+          const rotX = ((y - cy) / cy) * -6.5;
+          const rotY = ((x - cx) / cx) * 6.5;
+
+          card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.018, 1.018, 1.018)`;
+
+          glare.style.background = `radial-gradient(circle 240px at ${x}px ${y}px, rgba(255, 255, 255, 0.16), transparent 75%)`;
+          glare.style.opacity = '1';
+        });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+          glare.style.opacity = '0';
+        });
+      });
+    }
+
+    // =========================================================
+    // 3D REAL-TIME DIGITAL TWIN HOLOGRAPHIC CARDIAC ENGINE
+    // =========================================================
+    let twin3dScene, twin3dCamera, twin3dRenderer;
+    let twin3dMesh, twin3dParticles, twin3dRing1, twin3dRing2, twin3dShockwave;
+    let twin3dIsDragging = false, twin3dPrevMouse = { x: 0, y: 0 };
+    let twin3dTargetRot = { x: 0.2, y: 0.4 };
+    let twin3dShockwaveScale = 1.0;
+
+    function initThreeJsTwin() {
+      const container = document.getElementById('twin3dWrapper');
+      const canvas = document.getElementById('twin3dCanvas');
+      if (!container || !canvas || typeof THREE === 'undefined') return;
+
+      const w = container.clientWidth || 175;
+      const h = container.clientHeight || 155;
+
+      twin3dScene = new THREE.Scene();
+      twin3dCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+      twin3dCamera.position.z = 8.8;
+
+      twin3dRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      twin3dRenderer.setSize(w, h);
+      twin3dRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.7);
+      twin3dScene.add(ambientLight);
+
+      const pointLightOrange = new THREE.PointLight(0xFF5E1E, 2.8, 20);
+      pointLightOrange.position.set(5, 5, 5);
+      twin3dScene.add(pointLightOrange);
+
+      const pointLightAmber = new THREE.PointLight(0xFFA500, 2.0, 20);
+      pointLightAmber.position.set(-5, -5, 5);
+      twin3dScene.add(pointLightAmber);
+
+      // 1. Holographic Dual-Ventricle Wireframe Mesh (Anatomical Geodesic)
+      const geom = new THREE.IcosahedronGeometry(2.1, 2);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0xFF5E1E,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.85,
+        emissive: 0x331105,
+        roughness: 0.2,
+      });
+      twin3dMesh = new THREE.Mesh(geom, mat);
+      twin3dScene.add(twin3dMesh);
+
+      // 2. Cellular Metabolic Particles (Murburn Kinetic Electron Flow)
+      const particleCount = 180;
+      const pGeom = new THREE.BufferGeometry();
+      const pPositions = new Float32Array(particleCount * 3);
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        const r = Math.cbrt(Math.random()) * 1.8;
+        pPositions[i] = r * Math.sin(phi) * Math.cos(theta);
+        pPositions[i + 1] = r * Math.sin(phi) * Math.sin(theta) * 1.25; // heart-like vertical elongation
+        pPositions[i + 2] = r * Math.cos(phi);
+      }
+      pGeom.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+      const pMat = new THREE.PointsMaterial({
+        color: 0xFFA500,
+        size: 0.14,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending
+      });
+      twin3dParticles = new THREE.Points(pGeom, pMat);
+      twin3dScene.add(twin3dParticles);
+
+      // 3. Cybernetic Telemetry Orbit Rings
+      const ringGeom1 = new THREE.TorusGeometry(3.0, 0.035, 12, 64);
+      const ringMat1 = new THREE.MeshBasicMaterial({ color: 0xFF5E1E, transparent: true, opacity: 0.45 });
+      twin3dRing1 = new THREE.Mesh(ringGeom1, ringMat1);
+      twin3dScene.add(twin3dRing1);
+
+      const ringGeom2 = new THREE.TorusGeometry(3.2, 0.025, 12, 64);
+      const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x10B981, transparent: true, opacity: 0.35 });
+      twin3dRing2 = new THREE.Mesh(ringGeom2, ringMat2);
+      twin3dRing2.rotation.x = Math.PI / 2.5;
+      twin3dScene.add(twin3dRing2);
+
+      // 4. Systolic Shockwave Ring
+      const shockGeom = new THREE.RingGeometry(1.8, 1.95, 48);
+      const shockMat = new THREE.MeshBasicMaterial({
+        color: 0xFF5E1E,
+        transparent: true,
+        opacity: 0.0,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending
+      });
+      twin3dShockwave = new THREE.Mesh(shockGeom, shockMat);
+      twin3dScene.add(twin3dShockwave);
+
+      // Mouse drag controls for interactive 3D rotation
+      container.addEventListener('mousedown', e => {
+        twin3dIsDragging = true;
+        twin3dPrevMouse = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mouseup', () => { twin3dIsDragging = false; });
+      window.addEventListener('mousemove', e => {
+        if (!twin3dIsDragging) return;
+        const dx = e.clientX - twin3dPrevMouse.x;
+        const dy = e.clientY - twin3dPrevMouse.y;
+        twin3dTargetRot.y += dx * 0.012;
+        twin3dTargetRot.x += dy * 0.012;
+        twin3dPrevMouse = { x: e.clientX, y: e.clientY };
+      });
+
+      // Animation loop
+      animateThreeJsTwin();
+    }
+
+    function animateThreeJsTwin() {
+      requestAnimationFrame(animateThreeJsTwin);
+      if (!twin3dRenderer || !twin3dMesh) return;
+
+      const time = performance.now() * 0.001;
+      const bpm = actualHr;
+      const beatFreq = (bpm / 60) * Math.PI * 2;
+
+      // Realistic cardiac systolic contraction dynamics (P-QRS-T waveform)
+      const primaryBeat = Math.pow(Math.max(0, Math.sin(time * beatFreq)), 10);
+      const secondaryKick = Math.pow(Math.max(0, Math.sin(time * beatFreq + 0.5)), 8) * 0.35;
+      const totalContraction = primaryBeat + secondaryKick;
+
+      const scale = 1.0 + totalContraction * 0.22;
+      twin3dMesh.scale.set(scale, scale * 1.08, scale);
+      twin3dParticles.scale.set(scale * 0.95, scale * 1.02, scale * 0.95);
+
+      // Shockwave ring expansion on each systolic peak
+      if (primaryBeat > 0.8) {
+        twin3dShockwaveScale = 1.0;
+        twin3dShockwave.material.opacity = 0.75;
+      }
+      twin3dShockwaveScale += 0.035;
+      twin3dShockwave.scale.set(twin3dShockwaveScale, twin3dShockwaveScale, twin3dShockwaveScale);
+      twin3dShockwave.material.opacity = Math.max(0, twin3dShockwave.material.opacity - 0.03);
+
+      // Smooth rotation with user drag inertia
+      if (!twin3dIsDragging) {
+        twin3dTargetRot.y += 0.008;
+      }
+      twin3dMesh.rotation.y += (twin3dTargetRot.y - twin3dMesh.rotation.y) * 0.1;
+      twin3dMesh.rotation.x += (twin3dTargetRot.x - twin3dMesh.rotation.x) * 0.1;
+
+      twin3dParticles.rotation.y = twin3dMesh.rotation.y * 1.3;
+      twin3dRing1.rotation.y += 0.012;
+      twin3dRing1.rotation.x = Math.sin(time * 0.8) * 0.3;
+      twin3dRing2.rotation.z += 0.015;
+
+      // Dynamic Chromatic Shift based on Cybernetic Discrepancy Gap
+      const gap = Math.abs(actualHr - (window.lastPredictedBpm || actualHr));
+      let hexColor = 0xFF5E1E;
+      let shockColor = 0x10B981;
+
+      if (gap < 5.0) {
+        // Homeostasis: Warm Sunset Orange & Mint Green
+        hexColor = 0xFF5E1E;
+        shockColor = 0x10B981;
+      } else if (gap < 12.0) {
+        // Adaptive Lag: Golden Amber
+        hexColor = 0xF59E0B;
+        shockColor = 0xF59E0B;
+      } else {
+        // Critical Mismatch Alarm: Crimson Red
+        hexColor = 0xEF4444;
+        shockColor = 0xEF4444;
+      }
+
+      twin3dMesh.material.color.setHex(hexColor);
+      twin3dParticles.material.color.setHex(hexColor);
+      twin3dRing1.material.color.setHex(shockColor);
+      twin3dShockwave.material.color.setHex(shockColor);
+
+      // Update 3D HUD text
+      const hudBpm = document.getElementById('twin3dHudBpm');
+      if (hudBpm) hudBpm.innerText = `${Math.round(actualHr)} BPM`;
+
+      twin3dRenderer.render(twin3dScene, twin3dCamera);
+    }
+
+    // --- Init & 1-Second Heartbeat ---
+    window.addEventListener('load', () => {
+      onAgeChanged(18);
+      setBmi('normal');
+      updateUi();
+      setInterval(updateUi, 1000);
+      init3dCards();
+      setTimeout(initThreeJsTwin, 150);
+    });
+
+    window.addEventListener('resize', () => {
+      drawWaveform(getMaxCeiling(userAge));
+      if (twin3dRenderer && twin3dCamera) {
+        const container = document.getElementById('twin3dWrapper');
+        if (container) {
+          const w = container.clientWidth || 175;
+          const h = container.clientHeight || 155;
+          twin3dCamera.aspect = w / h;
+          twin3dCamera.updateProjectionMatrix();
+          twin3dRenderer.setSize(w, h);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
